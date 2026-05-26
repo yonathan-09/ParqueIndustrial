@@ -6,11 +6,13 @@ import com.damian.gpiv.services.UsuarioService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class RegistroUsuarioView extends JFrame {
     private final UsuarioService service;
     private JTextField txtNombre;
-    private JTextField txtRol;
+    private JComboBox<String> comboRol; // ahora es un combo
     private JPasswordField txtPassword;
 
     public RegistroUsuarioView() {
@@ -23,9 +25,9 @@ public class RegistroUsuarioView extends JFrame {
         txtNombre = new JTextField(20);
         add(txtNombre);
 
-        add(new JLabel("Rol (administrador/empresa/organismo/proveedor)"));
-        txtRol = new JTextField(20);
-        add(txtRol);
+        add(new JLabel("Rol"));
+        comboRol = new JComboBox<>(new String[]{"administrador", "empresa", "organismo", "proveedor"});
+        add(comboRol);
 
         add(new JLabel("Contraseña"));
         txtPassword = new JPasswordField(20);
@@ -35,17 +37,26 @@ public class RegistroUsuarioView extends JFrame {
         btnRegistrar.addActionListener(this::registrar);
         add(btnRegistrar);
 
-        setSize(350, 250);
+        setSize(550, 250);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Si el usuario cierra la ventana de registro sin registrar nada, volver al login
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                SwingUtilities.invokeLater(LoginView::new);
+            }
+        });
+
         setVisible(true);
     }
 
     private void registrar(ActionEvent e) {
         String nombre = txtNombre.getText();
-        String rol = txtRol.getText();
+        String rol = (String) comboRol.getSelectedItem(); // obtenemos del combo
         String password = new String(txtPassword.getPassword());
 
-        if (nombre.isEmpty() || rol.isEmpty() || password.isEmpty()) {
+        if (nombre.isEmpty() || rol == null || password.isEmpty()) {
             JOptionPane.showMessageDialog(this,
                     "Todos los campos son obligatorios",
                     "Error",

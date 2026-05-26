@@ -13,6 +13,7 @@ public class LoteView extends JFrame {
     private JTextField txtSuperficie;
     private JTextField txtEmpresa;
     private JTextArea output;
+    private JTextField txtLoteId;
 
     public LoteView() {
         super("Lotes");
@@ -28,6 +29,14 @@ public class LoteView extends JFrame {
         txtEmpresa = new JTextField(20);
         add(txtEmpresa);
 
+        add(new JLabel("Lote ID para asociar"));
+        txtLoteId = new JTextField(10);
+        add(txtLoteId);
+
+        JButton btnAsociar = new JButton("Asociar a Empresa");
+        btnAsociar.addActionListener(this::asociar);
+        add(btnAsociar);
+
         JButton btnRegistrar = new JButton("Registrar Lote");
         btnRegistrar.addActionListener(this::registrar);
         add(btnRegistrar);
@@ -41,7 +50,7 @@ public class LoteView extends JFrame {
         add(new JScrollPane(output));
 
         setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 
@@ -61,9 +70,8 @@ public class LoteView extends JFrame {
 
         try {
             int superficie = Integer.parseInt(txtSuperficie.getText());
-            Lote lote = new Lote(superficie, "disponible", empresaId);
+            Lote lote = new Lote(superficie, "disponible", empresaId != null ? empresaId : 0);
             service.registrar(lote);
-            output.append("Lote registrado: " + lote.getSuperficie() + " m2\n");
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
                     "La superficie debe ser un número",
@@ -72,15 +80,39 @@ public class LoteView extends JFrame {
         }
     }
 
+    private void asociar(ActionEvent e) {
+        try {
+            int loteId = Integer.parseInt(txtLoteId.getText());
+            int empresaId = Integer.parseInt(txtEmpresa.getText());
+
+            service.asociarEmpresa(loteId, empresaId);
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Debes ingresar números válidos para Lote ID y Empresa ID",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
     private void listar(ActionEvent e) {
         List<Lote> lotes = service.listar();
         output.setText("");
         for (Lote l : lotes) {
-            output.append("Lote " + l.getId() + " | Superficie: " + l.getSuperficie() +
-                    " | Estado: " + l.getEstado() +
-                    " | Empresa ID: " + l.getEmpresaId() + "\n");
+            output.append("Lote " + l.getId()
+                    + " | Superficie: " + l.getSuperficie()
+                    + " | Estado: " + l.getEstado());
+
+            // Mostrar empresa solo si está asociada
+            if (l.getEmpresaId() > 0) {
+                output.append(" | Empresa ID: " + l.getEmpresaId());
+            }
+
+            output.append("\n");
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(LoteView::new);

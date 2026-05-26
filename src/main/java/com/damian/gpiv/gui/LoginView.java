@@ -30,8 +30,16 @@ public class LoginView extends JFrame {
         btnIngresar.addActionListener(this::login);
         add(btnIngresar);
 
-        setSize(300, 200);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Botón para abrir ventana de registro
+        JButton btnRegistrar = new JButton("Registrar Usuario");
+        btnRegistrar.addActionListener(e -> {
+            new RegistroUsuarioView(); // abre la ventana de registro
+            dispose(); // opcional: cerrar login si querés que quede solo la ventana de registro
+        });
+        add(btnRegistrar);
+
+        setSize(320, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // cerrar toda la app si se cierra login
         setVisible(true);
     }
 

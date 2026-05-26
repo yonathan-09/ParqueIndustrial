@@ -41,7 +41,6 @@ public class ProyectoService {
         }
     }
 
-    // Actualizar estado de proyecto
     public void actualizarEstado(int proyectoId, String nuevoEstado) {
         String sql = "UPDATE proyectos SET estado=? WHERE id=?";
 
@@ -50,14 +49,16 @@ public class ProyectoService {
 
             pstmt.setString(1, nuevoEstado);
             pstmt.setInt(2, proyectoId);
-
             pstmt.executeUpdate();
-            notifier.notify("Estado de Proyecto", "Proyecto " + proyectoId + " actualizado a: " + nuevoEstado);
+
+            notifier.notify("Evaluación de Proyecto",
+                    "Proyecto " + proyectoId + " actualizado a: " + nuevoEstado);
 
         } catch (SQLException e) {
             System.err.println("Error al actualizar estado de proyecto: " + e.getMessage());
         }
     }
+
 
     // Listar proyectos
     public List<Proyecto> listar() {
@@ -85,5 +86,32 @@ public class ProyectoService {
 
         return proyectos;
     }
+
+    public List<Proyecto> listarPorEmpresa(int empresaId) {
+        List<Proyecto> proyectos = new ArrayList<>();
+        String sql = "SELECT * FROM proyectos WHERE empresa_id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, empresaId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Proyecto proyecto = new Proyecto(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getString("estado"),
+                        rs.getInt("empresa_id")
+                );
+                proyectos.add(proyecto);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar proyectos: " + e.getMessage());
+        }
+
+        return proyectos;
+    }
+
 
 }

@@ -10,14 +10,18 @@ import java.util.List;
 
 public class ProyectoView extends JFrame {
     private final ProyectoService service;
+    private final int empresaId;
+    private final String rolUsuario;
     private JTextField txtNombre;
     private JTextField txtDesc;
-    private JTextField txtEmpresa;
     private JTextArea output;
 
-    public ProyectoView() {
+    // Constructor principal
+    public ProyectoView(int empresaId, String rolUsuario) {
         super("Proyectos");
         this.service = new ProyectoService();
+        this.empresaId = empresaId;
+        this.rolUsuario = rolUsuario;
 
         setLayout(new FlowLayout());
 
@@ -28,10 +32,6 @@ public class ProyectoView extends JFrame {
         add(new JLabel("Descripción"));
         txtDesc = new JTextField(20);
         add(txtDesc);
-
-        add(new JLabel("Empresa ID"));
-        txtEmpresa = new JTextField(20);
-        add(txtEmpresa);
 
         JButton btnRegistrar = new JButton("Registrar Proyecto");
         btnRegistrar.addActionListener(this::registrar);
@@ -50,34 +50,33 @@ public class ProyectoView extends JFrame {
         setVisible(true);
     }
 
-    private void registrar(ActionEvent e) {
-        Integer empresaId = null;
-        if (!txtEmpresa.getText().isEmpty()) {
-            try {
-                empresaId = Integer.parseInt(txtEmpresa.getText());
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
-                        "El ID de empresa debe ser un número",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
+    // Constructor vacío para pruebas rápidas
+    public ProyectoView() {
+        this(0, "administrador");
+    }
 
+    private void registrar(ActionEvent e) {
         Proyecto proyecto = new Proyecto(
+                0,
                 txtNombre.getText(),
                 txtDesc.getText(),
-                "en evaluación", // estado inicial por defecto
+                "pendiente",
                 empresaId
         );
-
         service.registrar(proyecto);
         output.append("Proyecto registrado: " + proyecto.getNombre() + "\n");
     }
 
     private void listar(ActionEvent e) {
-        List<Proyecto> proyectos = service.listar();
         output.setText("");
+        List<Proyecto> proyectos;
+
+        if ("empresa".equalsIgnoreCase(rolUsuario)) {
+            proyectos = service.listarPorEmpresa(empresaId);
+        } else {
+            proyectos = service.listar();
+        }
+
         for (Proyecto p : proyectos) {
             output.append("Proyecto " + p.getId() +
                     " | Nombre: " + p.getNombre() +
@@ -87,6 +86,9 @@ public class ProyectoView extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(ProyectoView::new);
+        // Ahora podés usar cualquiera de los dos constructores:
+        SwingUtilities.invokeLater(() -> new ProyectoView()); // usa valores por defecto
+        // o
+        // SwingUtilities.invokeLater(() -> new ProyectoView(1, "empresa"));
     }
 }

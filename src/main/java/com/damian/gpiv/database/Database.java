@@ -11,7 +11,14 @@ public class Database {
 
     // Obtener conexión
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+        Connection conn = DriverManager.getConnection(DB_URL);
+
+        // Activar claves foráneas en cada conexión
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute("PRAGMA foreign_keys = ON");
+        }
+
+        return conn;
     }
 
     // Inicializar base de datos
@@ -24,8 +31,8 @@ public class Database {
                      id INTEGER PRIMARY KEY AUTOINCREMENT,
                      nombre TEXT NOT NULL,
                      tipo TEXT CHECK(tipo IN ('radicada','interesada')),
-                     estado TEXT DEFAULT 'pendiente',
-                     email TEXT
+                     email TEXT,
+                     estado TEXT DEFAULT 'pendiente'
                  );
             """);
 
@@ -86,4 +93,3 @@ public class Database {
         initDB();
     }
 }
-

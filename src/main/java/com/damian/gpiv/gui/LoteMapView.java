@@ -30,7 +30,7 @@ public class LoteMapView extends JFrame {
         add(canvas);
 
         setSize(650, 450);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 

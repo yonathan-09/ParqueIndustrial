@@ -17,9 +17,43 @@ public class VentanaPrincipal extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Botones según rol
-        if (rol.equals("administrador")) {
+        switch (rol.toLowerCase()) {
+            case "administrador":
+                addButton("Gestionar Empresas", this::openEmpresas);
+                addButton("Evaluar Empresas", this::openEvaluarEmpresas);
+                addButton("Gestionar Proyectos", this::openProyectos);
+                addButton("Evaluar Proyectos", this::openEvaluarProyectos);
+                addButton("Gestionar Lotes", this::openLotes);
+                addButton("Ver Reportes", this::openReportes);
+                addButton("Mapa Interactivo de Lotes", this::openLoteMap);
+                addButton("Registrar Nuevo Usuario", this::openUserRegister);
+                break;
+
+            case "empresa":
+                addButton("Gestionar Empresas", this::openEmpresas);
+                addButton("Gestionar Proyectos", this::openProyectos);
+                addButton("Gestionar Lotes", this::openLotes);
+                break;
+
+            case "organismo":
+                addButton("Ver Proyectos", this::openProyectos);
+                break;
+
+            case "proveedor":
+                addButton("Ver Lotes Disponibles", this::openLotes);
+                break;
+
+            default:
+                JOptionPane.showMessageDialog(this,
+                        "Rol desconocido: " + rol,
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+        }
+        /*if (rol.equals("administrador")) {
             addButton("Gestionar Empresas", this::openEmpresas);
+            addButton("Evaluar Empresas", this::openEvaluarEmpresas);
             addButton("Gestionar Proyectos", this::openProyectos);
+            addButton("Evaluar Proyectos", this::openEvaluarProyectos);
             addButton("Gestionar Lotes", this::openLotes);
             addButton("Ver Reportes", this::openReportes);
             addButton("Mapa Interactivo de Lotes", this::openLoteMap);
@@ -35,7 +69,7 @@ public class VentanaPrincipal extends JFrame {
             addButton("Gestionar Lotes", this::openLotes);
         }
 
-        setVisible(true);
+        setVisible(true);*/
     }
 
     private void addButton(String text, Runnable action) {
@@ -49,9 +83,13 @@ public class VentanaPrincipal extends JFrame {
         SwingUtilities.invokeLater(EmpresaView::new);
     }
 
+    private void openEvaluarEmpresas() {SwingUtilities.invokeLater(EvaluarEmpresaView::new);}
+
     private void openProyectos() {
         SwingUtilities.invokeLater(ProyectoView::new);
     }
+
+    private void openEvaluarProyectos() {SwingUtilities.invokeLater(EvaluarProyectosView::new);}
 
     private void openLotes() {
         SwingUtilities.invokeLater(LoteView::new);

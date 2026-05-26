@@ -1,4 +1,5 @@
 package com.damian.gpiv.services;
+
 import com.damian.gpiv.database.Database;
 import com.damian.gpiv.models.Empresa;
 
@@ -11,25 +12,32 @@ import java.util.List;
 
 public class EmpresaService {
 
+    // Registrar empresa
     public void registrar(Empresa empresa) {
-        String sql = "INSERT INTO empresas (nombre, id, tipo, estado, email) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO empresas (nombre, tipo, email, estado) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, empresa.getNombre());
-            pstmt.setInt(2, empresa.getId());
-            pstmt.setString(3, empresa.getTipo());
-            pstmt.setString(4, empresa.getEstado());
-            pstmt.setString(5, empresa.getEmail());
+            pstmt.setString(2, empresa.getTipo());
+            pstmt.setString(3, empresa.getEmail());
+
+            // Estado depende del tipo
+            if ("radicada".equalsIgnoreCase(empresa.getTipo())) {
+                pstmt.setString(4, "aprobada");
+            } else {
+                pstmt.setString(4, "pendiente");
+            }
 
             pstmt.executeUpdate();
-            System.out.println("Empresa registrada correctamente.");
+            System.out.println("Empresa registrada correctamente con tipo: " + empresa.getTipo());
 
         } catch (SQLException e) {
             System.err.println("Error al registrar empresa: " + e.getMessage());
         }
     }
+
 
     // Listar empresas
     public List<Empresa> listar() {
@@ -45,8 +53,8 @@ public class EmpresaService {
                         rs.getString("nombre"),
                         rs.getInt("id"),
                         rs.getString("tipo"),
-                        rs.getString("estado"),
-                        rs.getString("email")
+                        rs.getString("email"),
+                        rs.getString("estado")
                 );
                 empresas.add(empresa);
             }
@@ -58,4 +66,33 @@ public class EmpresaService {
         return empresas;
     }
 
+    // Actualizar estado de empresa (solo interesadas)
+    public void actualizarEstado(int empresaId, String nuevoEstado) {
+        String sql;
+
+        if ("aprobada".equalsIgnoreCase(nuevoEstado)) {
+            // Si se aprueba → cambiar estado y tipo
+            sql = "UPDATE empresas SET estado=?, tipo='radicada' WHERE id=? AND tipo='interesada'";
+        } else {
+            // Si se rechaza → solo cambiar estado
+            sql = "UPDATE empresas SET estado=? WHERE id=? AND tipo='interesada'";
+        }
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nuevoEstado);
+            pstmt.setInt(2, empresaId);
+            int rows = pstmt.executeUpdate();
+
+            if (rows > 0) {
+                System.out.println("Empresa " + empresaId + " actualizada a estado: " + nuevoEstado);
+            } else {
+                System.out.println("No se encontró empresa interesada con ID " + empresaId);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar estado de empresa: " + e.getMessage());
+        }
+    }
 }

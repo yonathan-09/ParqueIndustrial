@@ -1,4 +1,5 @@
 package com.damian.gpiv.services;
+
 import com.damian.gpiv.database.Database;
 import com.damian.gpiv.models.Lote;
 
@@ -17,7 +18,7 @@ public class LoteService {
         this.notifier = new NotificationService();
     }
 
-    // Registrar lote
+    // Registrar lote (si empresaId es null o 0, se guarda como disponible sin empresa)
     public void registrar(Lote lote) {
         String sql = "INSERT INTO lotes (superficie, estado, empresa_id) VALUES (?, ?, ?)";
 
@@ -26,6 +27,7 @@ public class LoteService {
 
             pstmt.setInt(1, lote.getSuperficie());
             pstmt.setString(2, lote.getEstado());
+
             if (lote.getEmpresaId() != 0) {
                 pstmt.setInt(3, lote.getEmpresaId());
             } else {
@@ -36,7 +38,12 @@ public class LoteService {
             notifier.notify("Nuevo Lote", "Se registró un lote de " + lote.getSuperficie() + " m2");
 
         } catch (SQLException e) {
-            System.err.println("Error al registrar lote: " + e.getMessage());
+            if (e.getMessage().contains("FOREIGN KEY constraint failed")) {
+                System.err.println("La empresa indicada no existe, no se puede registrar el lote.");
+                notifier.notify("Error", "La empresa indicada no existe.");
+            } else {
+                System.err.println("Error al registrar lote: " + e.getMessage());
+            }
         }
     }
 
@@ -55,6 +62,30 @@ public class LoteService {
 
         } catch (SQLException e) {
             System.err.println("Error al actualizar estado de lote: " + e.getMessage());
+        }
+    }
+
+    // Asociar lote a una empresa y cambiar estado a ocupado
+    public void asociarEmpresa(int loteId, int empresaId) {
+        String sql = "UPDATE lotes SET empresa_id = ?, estado = ? WHERE id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, empresaId);
+            pstmt.setString(2, "ocupado");
+            pstmt.setInt(3, loteId);
+
+            pstmt.executeUpdate();
+            notifier.notify("Lote ocupado", "El lote " + loteId + " fue asignado a la empresa " + empresaId);
+
+        } catch (SQLException e) {
+            if (e.getMessage().contains("FOREIGN KEY constraint failed")) {
+                System.err.println("La empresa indicada no existe, no se puede asociar el lote.");
+                notifier.notify("Error", "La empresa indicada no existe.");
+            } else {
+                System.err.println("Error al asociar lote: " + e.getMessage());
+            }
         }
     }
 
@@ -84,4 +115,29 @@ public class LoteService {
         return lotes;
     }
 
+    public List<Lote> listarDisponibles() {
+        List<Lote> lotes = new ArrayList<>();
+        String sql = "SELECT * FROM lotes WHERE estado = 'disponible'";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                Lote lote = new Lote(
+                        rs.getInt("id"),
+                        rs.getInt("superficie"),
+                        rs.getString("estado"),
+                        rs.getInt("empresa_id")
+                );
+                lotes.add(lote);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar lotes disponibles: " + e.getMessage());
+        }
+
+        return lotes;
+    }
+
 }
+
