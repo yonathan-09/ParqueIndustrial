@@ -6,6 +6,7 @@ import com.damian.gpiv.services.UsuarioService;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.net.URI;
 
 public class LoginView extends JFrame {
     private final UsuarioService service;
@@ -38,7 +39,12 @@ public class LoginView extends JFrame {
         });
         add(btnRegistrar);
 
-        setSize(320, 200);
+        // 🔑 Nuevo botón "Formulario"
+        JButton btnFormulario = new JButton("Formulario");
+        btnFormulario.addActionListener(e -> abrirFormulario());
+        add(btnFormulario);
+
+        setSize(350, 220);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // cerrar toda la app si se cierra login
         setVisible(true);
     }
@@ -66,6 +72,20 @@ public class LoginView extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this,
                     "Usuario o contraseña incorrectos",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Método para abrir el formulario en el navegador
+    private void abrirFormulario() {
+        try {
+            Desktop.getDesktop().browse(new URI(
+                    "https://docs.google.com/forms/d/e/1FAIpQLSc36TWzWPMdNUuBeeMMGEkBVaCDdwOjJn7Y3yhcGz-zXusCng/viewform"
+            ));
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo abrir el formulario",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }

@@ -43,4 +43,9 @@ public class Lote {
         return superficie;
     }
 
+    @Override
+    public String toString() {
+        return "Lote " + id + " - Superficie " + superficie + " m2";
+    }
+
 }

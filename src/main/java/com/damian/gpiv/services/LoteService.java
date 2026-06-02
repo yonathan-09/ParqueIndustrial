@@ -26,11 +26,14 @@ public class LoteService {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, lote.getSuperficie());
-            pstmt.setString(2, lote.getEstado());
 
             if (lote.getEmpresaId() != 0) {
+                // Asociado a empresa → estado ocupado
+                pstmt.setString(2, "ocupado");
                 pstmt.setInt(3, lote.getEmpresaId());
             } else {
+                // Sin empresa → estado disponible
+                pstmt.setString(2, "disponible");
                 pstmt.setNull(3, java.sql.Types.INTEGER);
             }
 
@@ -46,6 +49,7 @@ public class LoteService {
             }
         }
     }
+
 
     // Actualizar estado de lote
     public void actualizarEstado(int loteId, String nuevoEstado) {

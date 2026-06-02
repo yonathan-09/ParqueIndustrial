@@ -59,15 +59,50 @@ public class EmpresaView extends JFrame {
             estado = "aprobada";
         }
 
+        String nombre = txtNombre.getText().trim();
+        String email = txtEmail.getText().trim();
+
+        // Validaciones
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Debes ingresar un nombre para la empresa",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Debes ingresar un email para la empresa",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validación básica de formato de email
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            JOptionPane.showMessageDialog(this,
+                    "El email ingresado no tiene un formato válido",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Si pasó las validaciones, se registra normalmente
         Empresa empresa = new Empresa(
-                txtNombre.getText(),
+                nombre,
                 0,
                 tipo,
-                txtEmail.getText(),
+                email,
                 estado
         );
+
         service.registrar(empresa);
+        output.append("Empresa registrada: " + empresa.getNombre() +
+                " | Email: " + empresa.getEmail() +
+                " | Estado: " + empresa.getEstado() + "\n");
     }
+
 
     private void listar(ActionEvent e) {
         List<Empresa> empresas = service.listar();
