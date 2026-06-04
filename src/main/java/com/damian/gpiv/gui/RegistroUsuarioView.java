@@ -4,6 +4,7 @@ import com.damian.gpiv.models.Usuario;
 import com.damian.gpiv.services.UsuarioService;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -12,39 +13,136 @@ import java.awt.event.WindowEvent;
 public class RegistroUsuarioView extends JFrame {
     private final UsuarioService service;
     private JTextField txtNombre;
-    private JComboBox<String> comboRol; // ahora es un combo
+    private JComboBox<String> comboRol;
     private JPasswordField txtPassword;
 
     public RegistroUsuarioView() {
-        super("Registrar Nuevo Usuario");
+        super("Registrar Nuevo Usuario - GPIV");
         this.service = new UsuarioService();
 
-        setLayout(new FlowLayout());
+        // Usamos BorderLayout para controlar los anchos de las columnas de forma precisa
+        setLayout(new BorderLayout());
 
-        add(new JLabel("Nombre de usuario"));
-        txtNombre = new JTextField(20);
-        add(txtNombre);
+        // COLOR VERDE CORPORATIVO ACTUALIZADO (Sincronizado con el Login y la foto)
+        Color verdeFoto = new Color(93, 203, 82);
 
-        add(new JLabel("Rol"));
+        // ---------------------------------------------------------------------
+        // PANEL IZQUIERDO: Barra lateral angosta con el nuevo verde
+        // ---------------------------------------------------------------------
+        JPanel panelIzquierdoVerde = new JPanel();
+        panelIzquierdoVerde.setBackground(verdeFoto); // Cambiado al verde de la foto
+        panelIzquierdoVerde.setPreferredSize(new Dimension(150, 500));
+
+        // ---------------------------------------------------------------------
+        // PANEL DERECHO: El bloque principal ("Acá va todo") con fuentes grandes
+        // ---------------------------------------------------------------------
+        JPanel panelDerechoFormulario = new JPanel(new GridBagLayout());
+        panelDerechoFormulario.setBackground(Color.WHITE);
+        panelDerechoFormulario.setBorder(new EmptyBorder(20, 50, 20, 50));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 0, 4, 0);
+        gbc.gridx = 0;
+
+        // Encabezado
+        JLabel lblHeader = new JLabel("Crear Cuenta");
+        lblHeader.setFont(new Font("Arial", Font.BOLD, 26));
+        lblHeader.setForeground(new Color(50, 50, 50));
+        gbc.gridy = 0;
+        panelDerechoFormulario.add(lblHeader, gbc);
+
+        // Separador sutil
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 0, 15, 0);
+        panelDerechoFormulario.add(new JSeparator(), gbc);
+        gbc.insets = new Insets(8, 0, 4, 0);
+
+        // --- Campo: Nombre de usuario ---
+        JLabel lblNombre = new JLabel("Nombre de usuario");
+        lblNombre.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblNombre.setForeground(new Color(80, 80, 80));
+        gbc.gridy = 2;
+        panelDerechoFormulario.add(lblNombre, gbc);
+
+        txtNombre = new JTextField();
+        txtNombre.setFont(new Font("Arial", Font.PLAIN, 18));
+        txtNombre.setPreferredSize(new Dimension(300, 38));
+        gbc.gridy = 3;
+        panelDerechoFormulario.add(txtNombre, gbc);
+
+        // --- Campo: Rol ---
+        JLabel lblRol = new JLabel("Rol");
+        lblRol.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblRol.setForeground(new Color(80, 80, 80));
+        gbc.gridy = 4;
+        panelDerechoFormulario.add(lblRol, gbc);
+
         comboRol = new JComboBox<>(new String[]{"administrador", "empresa", "organismo", "proveedor"});
-        add(comboRol);
+        comboRol.setFont(new Font("Arial", Font.PLAIN, 18));
+        comboRol.setBackground(Color.WHITE);
+        comboRol.setPreferredSize(new Dimension(300, 38));
+        gbc.gridy = 5;
+        panelDerechoFormulario.add(comboRol, gbc);
 
-        add(new JLabel("Contraseña"));
-        txtPassword = new JPasswordField(20);
-        add(txtPassword);
+        // --- Campo: Contraseña ---
+        JLabel lblPassword = new JLabel("Contraseña");
+        lblPassword.setFont(new Font("Arial", Font.PLAIN, 18));
+        lblPassword.setForeground(new Color(80, 80, 80));
+        gbc.gridy = 6;
+        panelDerechoFormulario.add(lblPassword, gbc);
 
+        txtPassword = new JPasswordField();
+        txtPassword.setFont(new Font("Arial", Font.PLAIN, 18));
+        txtPassword.setPreferredSize(new Dimension(300, 38));
+        gbc.gridy = 7;
+        panelDerechoFormulario.add(txtPassword, gbc);
+
+        // --- Botón: Registrar Usuario (Estilo adaptado al verde) ---
         JButton btnRegistrar = new JButton("Registrar Usuario");
+        btnRegistrar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnRegistrar.setBackground(verdeFoto); // Cambiado al verde de la foto
+        btnRegistrar.setForeground(Color.WHITE);
+        btnRegistrar.setFocusPainted(false);
+        btnRegistrar.setPreferredSize(new Dimension(300, 42));
         btnRegistrar.addActionListener(this::registrar);
-        add(btnRegistrar);
+        gbc.gridy = 8;
+        gbc.insets = new Insets(20, 0, 5, 0);
+        panelDerechoFormulario.add(btnRegistrar, gbc);
 
-        setSize(550, 250);
+        // --- Botón: Cancelar ---
+        JButton btnVolver = new JButton("Cancelar");
+        btnVolver.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnVolver.setContentAreaFilled(false);
+        btnVolver.setBorderPainted(false);
+        btnVolver.setForeground(Color.GRAY);
+        btnVolver.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnVolver.addActionListener(e -> {
+            dispose();
+            SwingUtilities.invokeLater(LoginView::new);
+        });
+        gbc.gridy = 9;
+        gbc.insets = new Insets(5, 0, 0, 0);
+        panelDerechoFormulario.add(btnVolver, gbc);
+
+        // ---------------------------------------------------------------------
+        // ACOPLAMIENTO DE LOS PANELES EN SUS RESPECTIVAS POSICIONES
+        // ---------------------------------------------------------------------
+        add(panelIzquierdoVerde, BorderLayout.WEST); // Franja lateral angosta
+        add(panelDerechoFormulario, BorderLayout.CENTER); // El resto blanco dominante
+
+        // Configuración de la pantalla
+        setSize(750, 520);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
-        // Si el usuario cierra la ventana de registro sin registrar nada, volver al login
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                SwingUtilities.invokeLater(LoginView::new);
+                if (Frame.getFrames().length <= 1) {
+                    SwingUtilities.invokeLater(LoginView::new);
+                }
             }
         });
 
@@ -53,7 +151,7 @@ public class RegistroUsuarioView extends JFrame {
 
     private void registrar(ActionEvent e) {
         String nombre = txtNombre.getText();
-        String rol = (String) comboRol.getSelectedItem(); // obtenemos del combo
+        String rol = (String) comboRol.getSelectedItem();
         String password = new String(txtPassword.getPassword());
 
         if (nombre.isEmpty() || rol == null || password.isEmpty()) {
@@ -72,9 +170,7 @@ public class RegistroUsuarioView extends JFrame {
                 "Éxito",
                 JOptionPane.INFORMATION_MESSAGE);
 
-        // Cerrar ventana de registro y abrir login
         dispose();
-        SwingUtilities.invokeLater(LoginView::new);
     }
 
     public static void main(String[] args) {

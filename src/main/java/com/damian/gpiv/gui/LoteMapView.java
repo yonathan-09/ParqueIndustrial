@@ -4,22 +4,46 @@ import com.damian.gpiv.models.Lote;
 import com.damian.gpiv.services.LoteService;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoteMapView extends JFrame {
     private final LoteService service;
     private JPanel canvas;
-    private List<LoteRect> loteRects; // lista de rectángulos con referencia al lote
+    private List<LoteRect> loteRects;
 
     public LoteMapView() {
-        super("Mapa Interactivo de Lotes");
+        super("Mapa Interactivo de Lotes - GPIV");
         this.service = new LoteService();
         this.loteRects = new ArrayList<>();
 
+        // MEDIDAS COMPACTAS Y ESTILIZADAS
+        setSize(780, 520);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        Color verdeFoto = new Color(93, 203, 82);
+
+        // 1. BARRA SUPERIOR (Estilo Navbar Fino)
+        JPanel navbar = new JPanel(new BorderLayout());
+        navbar.setBackground(verdeFoto);
+        navbar.setPreferredSize(new Dimension(780, 60));
+        navbar.setBorder(new EmptyBorder(0, 25, 0, 25));
+
+        JLabel lblTitulo = new JLabel("Distribución Espacial del Parque Industrial");
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        lblTitulo.setForeground(Color.WHITE);
+        navbar.add(lblTitulo, BorderLayout.WEST);
+
+        add(navbar, BorderLayout.NORTH);
+
+        // 2. LIENZO DE DIBUJO (Canvas interactivo)
         canvas = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -27,10 +51,9 @@ public class LoteMapView extends JFrame {
                 drawLotes(g);
             }
         };
-        canvas.setPreferredSize(new Dimension(600, 400));
         canvas.setBackground(Color.WHITE);
 
-        // 🔑 Un solo listener para todo el canvas
+        // Listener exacto para las colisiones del clic
         canvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -43,57 +66,71 @@ public class LoteMapView extends JFrame {
             }
         });
 
-        add(canvas);
+        // Contenedor para darle un margen limpio al canvas en los bordes
+        JPanel panelContenedor = new JPanel(new BorderLayout());
+        panelContenedor.setBorder(new EmptyBorder(20, 25, 20, 25));
+        panelContenedor.setBackground(Color.WHITE);
+        panelContenedor.add(canvas, BorderLayout.CENTER);
 
-        setSize(650, 450);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        add(panelContenedor, BorderLayout.CENTER);
         setVisible(true);
     }
 
     private void drawLotes(Graphics g) {
-        loteRects.clear(); // limpiar lista antes de dibujar
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        loteRects.clear();
         List<Lote> lotes = service.listar();
-        int x = 50, y = 50;
+
+        int x = 40, y = 30; // Ajuste de márgenes iniciales en el lienzo
 
         for (Lote lote : lotes) {
-            Color color;
-            switch (lote.getEstado()) {
-                case "disponible" -> color = Color.GREEN;
-                case "ocupado" -> color = Color.RED;
-                default -> color = Color.YELLOW;
+            Color colorFondo;
+            // CAMBIO VISUAL: Colores fuertes y puros para máxima visualización
+            switch (lote.getEstado().toLowerCase()) {
+                case "disponible" -> colorFondo = new Color(46, 184, 46);   // Verde fuerte vivo
+                case "ocupado"    -> colorFondo = new Color(230, 36, 36);   // Rojo fuerte vivo
+                default           -> colorFondo = new Color(242, 193, 46);  // Amarillo fuerte vivo
             }
 
-            // Dibujar rectángulo
-            g.setColor(color);
-            g.fillRect(x, y, 100, 60);
-            g.setColor(Color.BLACK);
-            g.drawRect(x, y, 100, 60);
+            // Dibujar el fondo del terreno redondeado suave
+            g2.setColor(colorFondo);
+            g2.fill(new RoundRectangle2D.Float(x, y, 110, 65, 8, 8));
 
-            // Texto dentro del rectángulo
-            g.setColor(Color.WHITE);
-            g.drawString("Lote " + lote.getId(), x + 30, y + 30);
+            // Contorno negro remarcado de 2px (Identidad visual del sistema)
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(2f));
+            g2.draw(new RoundRectangle2D.Float(x, y, 110, 65, 8, 8));
 
-            // Guardar coordenadas y lote asociado
-            loteRects.add(new LoteRect(new Rectangle(x, y, 100, 60), lote));
+            // Indicador de ID de Lote centrado con texto Blanco para contrastar con los colores fuertes
+            g2.setFont(new Font("Arial", Font.BOLD, 13));
+            g2.setColor(Color.WHITE);
+            g2.drawString("LOTE " + lote.getId(), x + 30, y + 38);
 
-            // Posición siguiente
-            x += 120;
-            if (x > 500) {
-                x = 50;
-                y += 80;
+            // Guardamos el rectángulo con las medidas exactas actuales para el clic
+            loteRects.add(new LoteRect(new Rectangle(x, y, 110, 65), lote));
+
+            // Tu lógica exacta de salto de fila para la grilla
+            x += 135;
+            if (x > 600) {
+                x = 40;
+                y += 90;
             }
         }
     }
 
     private void showDetails(Lote lote) {
-        String detalle = "Lote " + lote.getId() +
-                "\nSuperficie: " + lote.getSuperficie() + " m2" +
-                "\nEstado: " + lote.getEstado() +
-                "\nEmpresa ID: " + lote.getEmpresaId();
-        JOptionPane.showMessageDialog(this, detalle, "Detalle del Lote", JOptionPane.INFORMATION_MESSAGE);
+        String detalle = "📍 Información del Terreno" +
+                "\n────────────────────" +
+                "\n• Lote Nro: " + lote.getId() +
+                "\n• Superficie total: " + lote.getSuperficie() + " m²" +
+                "\n• Estado de ocupación: " + lote.getEstado().toUpperCase() +
+                "\n• ID Empresa Asignada: " + (lote.getEmpresaId() == 0 ? "Ninguna" : lote.getEmpresaId());
+
+        JOptionPane.showMessageDialog(this, detalle, "Ficha Técnica del Lote", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Clase auxiliar para vincular rectángulo con lote
     private static class LoteRect {
         Rectangle rect;
         Lote lote;
@@ -108,4 +145,3 @@ public class LoteMapView extends JFrame {
         SwingUtilities.invokeLater(LoteMapView::new);
     }
 }
-
