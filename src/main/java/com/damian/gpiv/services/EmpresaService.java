@@ -12,9 +12,11 @@ import java.util.List;
 
 public class EmpresaService {
 
-    // Registrar empresa
+    // Registrar empresa con todos los campos
     public void registrar(Empresa empresa) {
-        String sql = "INSERT INTO empresas (nombre, tipo, email, estado) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO empresas " +
+                "(nombre, tipo, email, estado, cuit, actividad_principal, direccion, referente, telefono, rubro, descripcion_servicio) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -29,6 +31,14 @@ public class EmpresaService {
             } else {
                 pstmt.setString(4, "pendiente");
             }
+
+            pstmt.setString(5, empresa.getCuit());
+            pstmt.setString(6, empresa.getActividadPrincipal());
+            pstmt.setString(7, empresa.getDireccion());
+            pstmt.setString(8, empresa.getReferente());
+            pstmt.setString(9, empresa.getTelefono());
+            pstmt.setString(10, empresa.getRubro());
+            pstmt.setString(11, empresa.getDescripcionServicio());
 
             pstmt.executeUpdate();
             System.out.println("Empresa registrada correctamente con tipo: " + empresa.getTipo());
@@ -53,7 +63,30 @@ public class EmpresaService {
         return false;
     }
 
-    // Listar empresas
+    // Buscar empresa por ID
+    public Empresa buscarPorId(int empresaId) {
+        String sql = "SELECT * FROM empresas WHERE id = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, empresaId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Empresa(
+                        rs.getString("nombre"),
+                        rs.getInt("id"),
+                        rs.getString("tipo"),
+                        rs.getString("email"),
+                        rs.getString("estado")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar empresa: " + e.getMessage());
+        }
+        return null; // Si no se encuentra
+    }
+
+
+    // Listar empresas con todos los campos
     public List<Empresa> listar() {
         List<Empresa> empresas = new ArrayList<>();
         String sql = "SELECT * FROM empresas";
@@ -68,7 +101,14 @@ public class EmpresaService {
                         rs.getInt("id"),
                         rs.getString("tipo"),
                         rs.getString("email"),
-                        rs.getString("estado")
+                        rs.getString("estado"),
+                        rs.getString("cuit"),
+                        rs.getString("actividad_principal"),
+                        rs.getString("direccion"),
+                        rs.getString("referente"),
+                        rs.getString("telefono"),
+                        rs.getString("rubro"),
+                        rs.getString("descripcion_servicio")
                 );
                 empresas.add(empresa);
             }

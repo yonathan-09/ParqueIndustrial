@@ -205,7 +205,7 @@ public class LoginView extends JFrame {
         gbc.insets = new java.awt.Insets(30, 0, 15, 0);
         panelDerecho.add(btnIngresar, gbc);
 
-        // Panel secundario para botones de abajo (Registrar y Formulario)
+        // Panel secundario para boton de abajo (Registrar)
         JPanel panelBotonesSecundarios = new JPanel(new GridLayout(1, 2, 15, 0));
         panelBotonesSecundarios.setBackground(Color.WHITE);
 
@@ -216,12 +216,7 @@ public class LoginView extends JFrame {
             dispose();
         });
 
-        JButton btnFormulario = new JButton("Formulario");
-        btnFormulario.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnFormulario.addActionListener(e -> abrirFormulario());
-
         panelBotonesSecundarios.add(btnRegistrar);
-        panelBotonesSecundarios.add(btnFormulario);
 
         gbc.gridy = 7;
         gbc.insets = new java.awt.Insets(10, 0, 0, 0);

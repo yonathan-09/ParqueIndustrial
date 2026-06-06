@@ -128,6 +128,7 @@ public class VentanaPrincipal extends JFrame {
         // Un JScrollPane envuelve el cuerpo por si los botones superan el alto de pantallas chicas
         JScrollPane scrollPane = new JScrollPane(cuerpoWeb);
         scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPane, BorderLayout.CENTER);
 
         setVisible(true);

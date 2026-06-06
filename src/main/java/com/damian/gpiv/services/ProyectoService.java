@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.damian.gpiv.database.Database;
+import com.damian.gpiv.models.Empresa;
 import com.damian.gpiv.models.Proyecto;
 
 public class ProyectoService {
@@ -49,60 +50,22 @@ public class ProyectoService {
 
     // Registrar proyecto con archivos PDF
     public void registrarConArchivos(Proyecto proyecto, List<File> archivos) {
-        String sql = "INSERT INTO proyectos (nombre, descripcion, estado, empresa_id) VALUES (?, ?, ?, ?)";
+        registrar(proyecto); // inserta el proyecto en la tabla proyectos
 
+        String sql = "INSERT INTO proyecto_archivos (proyecto_id, ruta_archivo) VALUES (?, ?)";
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, proyecto.getNombre());
-            pstmt.setString(2, proyecto.getDescripcion());
-            pstmt.setString(3, proyecto.getEstado());
-            if (proyecto.getEmpresaId() != null) {
-                pstmt.setInt(4, proyecto.getEmpresaId());
-            } else {
-                pstmt.setNull(4, java.sql.Types.INTEGER);
+            for (File archivo : archivos) {
+                pstmt.setInt(1, proyecto.getId()); // el ID generado del proyecto
+                pstmt.setString(2, archivo.getAbsolutePath());
+                pstmt.executeUpdate();
             }
-
-            pstmt.executeUpdate();
-
-            // Obtener ID generado del proyecto
-            int proyectoId = -1;
-            try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    proyectoId = rs.getInt(1);
-                }
-            }
-
-            // Guardar archivos PDF en carpeta local
-            if (proyectoId > 0 && archivos != null) {
-                Path carpeta = Path.of("uploads/proyectos/" + proyectoId);
-                Files.createDirectories(carpeta);
-
-                for (File archivo : archivos) {
-                    Path destino = carpeta.resolve(archivo.getName());
-                    try {
-                        Files.copy(archivo.toPath(), destino, StandardCopyOption.REPLACE_EXISTING);
-
-                        // Guardar referencia en tabla proyecto_archivos
-                        String sqlArchivo = "INSERT INTO proyecto_archivos (proyecto_id, ruta) VALUES (?, ?)";
-                        try (PreparedStatement pstmtArchivo = conn.prepareStatement(sqlArchivo)) {
-                            pstmtArchivo.setInt(1, proyectoId);
-                            pstmtArchivo.setString(2, destino.toString());
-                            pstmtArchivo.executeUpdate();
-                        }
-
-                    } catch (IOException ex) {
-                        System.err.println("Error al copiar archivo: " + ex.getMessage());
-                    }
-                }
-            }
-
-            notifier.notify("Nuevo Proyecto", "Se registró el proyecto con archivos: " + proyecto.getNombre());
-
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             System.err.println("Error al registrar proyecto con archivos: " + e.getMessage());
         }
     }
+
 
     public void actualizarEstado(int proyectoId, String nuevoEstado) {
         String sql = "UPDATE proyectos SET estado=? WHERE id=?";
@@ -122,6 +85,28 @@ public class ProyectoService {
         }
     }
 
+    public List<File> obtenerArchivosAdjuntos(int proyectoId) {
+        List<File> archivos = new ArrayList<>();
+        String sql = "SELECT ruta_archivo FROM proyecto_archivos WHERE proyecto_id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, proyectoId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String ruta = rs.getString("ruta_archivo");
+                archivos.add(new File(ruta));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener archivos adjuntos: " + e.getMessage());
+        }
+
+        return archivos;
+    }
+
+
+
     // Listar proyectos
     public List<Proyecto> listar() {
         List<Proyecto> proyectos = new ArrayList<>();
@@ -131,6 +116,8 @@ public class ProyectoService {
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
+            EmpresaService empresaService = new EmpresaService();
+
             while (rs.next()) {
                 Proyecto proyecto = new Proyecto(
                         rs.getInt("id"),
@@ -139,6 +126,11 @@ public class ProyectoService {
                         rs.getString("estado"),
                         rs.getInt("empresa_id")
                 );
+
+                // Buscar la empresa asociada y setearla en el proyecto
+                Empresa empresa = empresaService.buscarPorId(rs.getInt("empresa_id"));
+                proyecto.setEmpresa(empresa);
+
                 proyectos.add(proyecto);
             }
 
@@ -148,6 +140,7 @@ public class ProyectoService {
 
         return proyectos;
     }
+
 
     public List<Proyecto> listarPorEmpresa(int empresaId) {
         List<Proyecto> proyectos = new ArrayList<>();
@@ -158,6 +151,8 @@ public class ProyectoService {
             pstmt.setInt(1, empresaId);
             ResultSet rs = pstmt.executeQuery();
 
+            EmpresaService empresaService = new EmpresaService();
+
             while (rs.next()) {
                 Proyecto proyecto = new Proyecto(
                         rs.getInt("id"),
@@ -166,6 +161,11 @@ public class ProyectoService {
                         rs.getString("estado"),
                         rs.getInt("empresa_id")
                 );
+
+                // Buscar la empresa asociada y setearla en el proyecto
+                Empresa empresa = empresaService.buscarPorId(rs.getInt("empresa_id"));
+                proyecto.setEmpresa(empresa);
+
                 proyectos.add(proyecto);
             }
         } catch (SQLException e) {
@@ -174,4 +174,5 @@ public class ProyectoService {
 
         return proyectos;
     }
+
 }

@@ -125,6 +125,14 @@ public class EmpresaDashboardView extends JFrame {
         // 1. Crear los componentes de texto para el formulario único
         JTextField txtNombre = new JTextField(15);
         JTextField txtEmail = new JTextField(15);
+        JTextField txtCuit = new JTextField(15);
+        JTextField txtActividadPrincipal = new JTextField(15);
+        JTextField txtDireccion = new JTextField(15);
+        JTextField txtReferente = new JTextField(15);
+        JTextField txtTelefono = new JTextField(15);
+        JComboBox<String> comboRubro = new JComboBox<>(new String[]{"Servicios", "Bienes", "Bienes y Servicios"});
+        JTextField txtDescripcionServicio = new JTextField(15);
+
 
         // 2. Armar un panel contenedor para agrupar los campos verticalmente
         JPanel panelFormulario = new JPanel(new GridLayout(0, 1, 5, 5));
@@ -133,6 +141,20 @@ public class EmpresaDashboardView extends JFrame {
         panelFormulario.add(txtNombre);
         panelFormulario.add(new JLabel("Email de la empresa:"));
         panelFormulario.add(txtEmail);
+        panelFormulario.add(new JLabel("CUIT:"));
+        panelFormulario.add(txtCuit);
+        panelFormulario.add(new JLabel("Actividad Principal:"));
+        panelFormulario.add(txtActividadPrincipal);
+        panelFormulario.add(new JLabel("Dirección:"));
+        panelFormulario.add(txtDireccion);
+        panelFormulario.add(new JLabel("Persona Referente:"));
+        panelFormulario.add(txtReferente);
+        panelFormulario.add(new JLabel("Teléfono:"));
+        panelFormulario.add(txtTelefono);
+        panelFormulario.add(new JLabel("Rubro:"));
+        panelFormulario.add(comboRubro);
+        panelFormulario.add(new JLabel("Descripción del Servicio/Bien:"));
+        panelFormulario.add(txtDescripcionServicio);
 
         // 3. Lanzar el JOptionPane mostrando el panel completo con botones de Aceptar/Cancelar
         int result = JOptionPane.showConfirmDialog(this, panelFormulario,
@@ -144,14 +166,38 @@ public class EmpresaDashboardView extends JFrame {
             String email = txtEmail.getText().trim();
 
             // Validación simple para asegurarnos de que no envíe datos vacíos
-            if (!nombre.isEmpty() && !email.isEmpty()) {
-                Empresa empresa = new Empresa(nombre, 0, "interesada", email, "pendiente");
+            if (txtNombre.getText().trim().isEmpty() ||
+                    txtEmail.getText().trim().isEmpty() ||
+                    txtCuit.getText().trim().isEmpty() ||
+                    txtActividadPrincipal.getText().trim().isEmpty() ||
+                    txtReferente.getText().trim().isEmpty() ||
+                    txtTelefono.getText().trim().isEmpty() ||
+                    txtDescripcionServicio.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this,
+                        "Debes completar todos los campos obligatorios",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else {
+                Empresa empresa = new Empresa(
+                        txtNombre.getText().trim(),
+                        0,
+                        "interesada",
+                        txtEmail.getText().trim(),
+                        "pendiente",
+                        txtCuit.getText().trim(),
+                        txtActividadPrincipal.getText().trim(),
+                        txtDireccion.getText().trim(),
+                        txtReferente.getText().trim(),
+                        txtTelefono.getText().trim(),
+                        (String) comboRubro.getSelectedItem(),
+                        txtDescripcionServicio.getText().trim()
+                );
+
                 empresaService.registrar(empresa);
                 output.append("» [" + java.time.LocalTime.now().toString().substring(0, 5) + "] Empresa registrada como interesada (pendiente de aprobación).\n");
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Debe completar ambos campos para registrar la empresa.",
-                        "Campos Incompletos", JOptionPane.WARNING_MESSAGE);
             }
         }
     }

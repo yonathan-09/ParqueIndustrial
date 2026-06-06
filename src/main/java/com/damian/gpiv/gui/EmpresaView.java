@@ -14,6 +14,15 @@ public class EmpresaView extends JFrame {
     private JTextField txtNombre;
     private JComboBox<String> comboTipo;
     private JTextField txtEmail;
+    private JTextField txtCuit;
+    private JTextField txtActividadPrincipal;
+    private JTextField txtActividadSecundaria;
+    private JTextField txtDireccion;
+    private JTextField txtReferente;
+    private JTextField txtTelefono;
+    private JComboBox<String> comboRubro;
+    private JTextField txtDescripcionServicio;
+
     private JTextArea output;
 
     public EmpresaView() {
@@ -26,93 +35,137 @@ public class EmpresaView extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO ACTUALIZADO (Sincronizado con la foto)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // PANEL IZQUIERDO: Barra lateral decorativa institucional
-        // ---------------------------------------------------------------------
+        // PANEL IZQUIERDO: Barra lateral decorativa
         JPanel panelIzquierdoVerde = new JPanel();
         panelIzquierdoVerde.setBackground(verdeFoto);
         panelIzquierdoVerde.setPreferredSize(new Dimension(150, 650));
         add(panelIzquierdoVerde, BorderLayout.WEST);
 
-        // ---------------------------------------------------------------------
-        // PANEL CENTRAL/DERECHO: Formulario Operativo y Listado
-        // ---------------------------------------------------------------------
-        JPanel panelContenido = new JPanel(new GridBagLayout());
+        // PANEL CENTRAL/DERECHO: Formulario
+        JPanel panelTitulo = new JPanel();
+        panelTitulo.setLayout(new BorderLayout());
+        panelTitulo.setBackground(Color.WHITE);
+        panelTitulo.setBorder(new EmptyBorder(15, 40, 15, 40));
+
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new GridLayout(0, 2, 10, 10));
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(6, 0, 6, 0);
-        gbc.gridx = 0;
-        gbc.weightx = 1.0;
-
         // Título de la sección
-        JLabel lblTitulo = new JLabel("Administración de Empresas");
+        JLabel lblTitulo = new JLabel("Administración de Empresas", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(40, 45, 50));
-        gbc.gridy = 0;
-        panelContenido.add(lblTitulo, gbc);
-
-        // Separador superior
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 15, 0);
-        panelContenido.add(new JSeparator(), gbc);
-        gbc.insets = new Insets(6, 0, 6, 0); // Reset
+        panelTitulo.add(lblTitulo);
 
         // --- Campo: Nombre ---
         JLabel lblNombre = new JLabel("Nombre de la Empresa");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         lblNombre.setForeground(new Color(80, 80, 80));
-        gbc.gridy = 2;
-        panelContenido.add(lblNombre, gbc);
+        panelContenido.add(lblNombre);
 
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         txtNombre.setPreferredSize(new Dimension(300, 35));
-        gbc.gridy = 3;
-        panelContenido.add(txtNombre, gbc);
+        panelContenido.add(txtNombre);
 
         // --- Campo: Tipo ---
         JLabel lblTipo = new JLabel("Tipo de Estado");
         lblTipo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblTipo.setForeground(new Color(80, 80, 80));
-        gbc.gridy = 4;
-        panelContenido.add(lblTipo, gbc);
+        panelContenido.add(lblTipo);
 
         comboTipo = new JComboBox<>(new String[]{"interesada", "radicada"});
-        comboTipo.setFont(new Font("Arial", Font.PLAIN, 16));
-        comboTipo.setBackground(Color.WHITE);
-        comboTipo.setPreferredSize(new Dimension(300, 35));
-        gbc.gridy = 5;
-        panelContenido.add(comboTipo, gbc);
+        panelContenido.add(comboTipo);
 
         // --- Campo: Email ---
         JLabel lblEmail = new JLabel("Correo Electrónico de Contacto");
         lblEmail.setFont(new Font("Arial", Font.PLAIN, 16));
         lblEmail.setForeground(new Color(80, 80, 80));
-        gbc.gridy = 6;
-        panelContenido.add(lblEmail, gbc);
+        panelContenido.add(lblEmail);
 
         txtEmail = new JTextField();
         txtEmail.setFont(new Font("Arial", Font.PLAIN, 16));
         txtEmail.setPreferredSize(new Dimension(300, 35));
-        gbc.gridy = 7;
-        panelContenido.add(txtEmail, gbc);
+        panelContenido.add(txtEmail);
+
+        JLabel lblCuit = new JLabel("CUIT");
+        lblCuit.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblCuit.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblCuit);
+
+        txtCuit = new JTextField();
+        txtCuit.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtCuit.setPreferredSize(new Dimension(300, 35));
+        panelContenido.add(txtCuit);
+
+// --- Campo: Actividad Principal ---
+        JLabel lblActPrin = new JLabel("Actividad Principal");
+        lblActPrin.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblActPrin.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblActPrin);
+
+        txtActividadPrincipal = new JTextField();
+        panelContenido.add(txtActividadPrincipal);
+
+// --- Campo: Dirección ---
+        JLabel lblDireccion = new JLabel("Dirección");
+        lblDireccion.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblDireccion.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblDireccion);
+
+        txtDireccion = new JTextField();
+        panelContenido.add(txtDireccion);
+
+// --- Campo: Persona Referente ---
+        JLabel lblReferente = new JLabel("Persona Referente");
+        lblReferente.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblReferente.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblReferente);
+
+        txtReferente = new JTextField();
+        panelContenido.add(txtReferente);
+
+// --- Campo: Teléfono ---
+        JLabel lblTelefono = new JLabel("Teléfono");
+        lblTelefono.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblTelefono.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblTelefono);
+
+        txtTelefono = new JTextField();
+        panelContenido.add(txtTelefono);
+
+// --- Campo: Rubro ---
+        JLabel lblRubro = new JLabel("Rubro");
+        lblRubro.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblRubro.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblRubro);
+
+        comboRubro = new JComboBox<>(new String[]{"Servicios", "Bienes", "Bienes y Servicios"});
+        panelContenido.add(comboRubro);
+
+// --- Campo: Descripción del servicio/bien ---
+        JLabel lblDescServ = new JLabel("Descripción del Servicio/Bien");
+        lblDescServ.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblDescServ.setForeground(new Color(80, 80, 80));
+        panelContenido.add(lblDescServ);
+
+        txtDescripcionServicio = new JTextField();
+        panelContenido.add(txtDescripcionServicio);
+
 
         // ---------------------------------------------------------------------
         // PANEL DE ACCIONES: Botones en paralelo con Bordes Negros Remarcados
         // ---------------------------------------------------------------------
-        JPanel panelBotones = new JPanel(new GridLayout(1, 2, 20, 0));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(Color.WHITE);
 
         JButton btnRegistrar = new JButton("Registrar Empresa");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.setBackground(verdeFoto);
-        btnRegistrar.setForeground(Color.WHITE);
+        btnRegistrar.setForeground(Color.BLACK);
         btnRegistrar.setFocusPainted(false);
         btnRegistrar.setPreferredSize(new Dimension(150, 45));
         // BORDE NEGRO REMARCADO SOLICITADO
@@ -125,6 +178,7 @@ public class EmpresaView extends JFrame {
         btnListar.setBackground(new Color(240, 243, 247));
         btnListar.setForeground(new Color(40, 50, 60));
         btnListar.setFocusPainted(false);
+        btnListar.setPreferredSize(new Dimension(150, 45));
         // BORDE NEGRO REMARCADO SOLICITADO
         btnListar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         btnListar.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -132,10 +186,7 @@ public class EmpresaView extends JFrame {
 
         panelBotones.add(btnRegistrar);
         panelBotones.add(btnListar);
-
-        gbc.gridy = 8;
-        gbc.insets = new Insets(15, 0, 15, 0);
-        panelContenido.add(panelBotones, gbc);
+        panelContenido.add(panelBotones);
 
         // --- Área de Consola/Salida ---
         output = new JTextArea(10, 50);
@@ -144,39 +195,50 @@ public class EmpresaView extends JFrame {
         output.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
 
         JScrollPane scroll = new JScrollPane(output);
-        scroll.setPreferredSize(new Dimension(300, 180));
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        gbc.gridy = 9;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 1.0;
-        panelContenido.add(scroll, gbc);
+        JPanel panelAcciones = new JPanel(new BorderLayout());
+        panelAcciones.add(panelBotones, BorderLayout.NORTH);
+        panelAcciones.add(scroll, BorderLayout.CENTER);
 
-        add(panelContenido, BorderLayout.CENTER);
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.add(panelTitulo);
+        panelPrincipal.add(panelContenido);
+        panelPrincipal.add(panelAcciones);
+
+        JScrollPane scrollPanel = new JScrollPane(panelPrincipal);
+        scrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
+
+        add(scrollPanel, BorderLayout.CENTER);
+
         setVisible(true);
     }
 
     private void registrar(ActionEvent e) {
         String tipo = (String) comboTipo.getSelectedItem();
         String estado = "pendiente";
-
         if ("radicada".equalsIgnoreCase(tipo)) {
             estado = "aprobada";
         }
 
         String nombre = txtNombre.getText().trim();
         String email = txtEmail.getText().trim();
+        String cuit = txtCuit.getText().trim();
+        String actividadPrincipal = txtActividadPrincipal.getText().trim();
+        String referente = txtReferente.getText().trim();
+        String telefono = txtTelefono.getText().trim();
+        String rubro = (String) comboRubro.getSelectedItem();
+        String descripcionServicio = txtDescripcionServicio.getText().trim();
 
-        if (nombre.isEmpty()) {
+        // Validaciones básicas
+        if (nombre.isEmpty() || email.isEmpty() || cuit.isEmpty() ||
+                actividadPrincipal.isEmpty() || referente.isEmpty() || telefono.isEmpty() ||
+                descripcionServicio.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Debes ingresar un nombre para la empresa",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (email.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Debes ingresar un email para la empresa",
+                    "Debes completar todos los campos obligatorios",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
@@ -195,18 +257,36 @@ public class EmpresaView extends JFrame {
                 0,
                 tipo,
                 email,
-                estado
+                estado,
+                cuit,
+                actividadPrincipal,
+                txtDireccion.getText().trim(),
+                referente,
+                telefono,
+                rubro,
+                descripcionServicio
         );
 
         service.registrar(empresa);
         output.append("» EMPRESA REGISTRADA: " + empresa.getNombre().toUpperCase() +
-                "\n  Tipo: " + empresa.getTipo() + " | Email: " + empresa.getEmail() +
-                " | Estado: " + empresa.getEstado() + "\n──────────────────────────────────────────────────\n");
+                "\n  CUIT: " + empresa.getCuit() +
+                " | Actividad: " + empresa.getActividadPrincipal() +
+                " | Referente: " + empresa.getReferente() +
+                " | Teléfono: " + empresa.getTelefono() +
+                " | Rubro: " + empresa.getRubro() +
+                "\n──────────────────────────────────────────────────\n");
 
-        // Limpiar campos después de registrar con éxito
+        // Limpiar campos
         txtNombre.setText("");
         txtEmail.setText("");
+        txtCuit.setText("");
+        txtActividadPrincipal.setText("");
+        txtDireccion.setText("");
+        txtReferente.setText("");
+        txtTelefono.setText("");
+        txtDescripcionServicio.setText("");
     }
+
 
     private void listar(ActionEvent e) {
         List<Empresa> empresas = service.listar();

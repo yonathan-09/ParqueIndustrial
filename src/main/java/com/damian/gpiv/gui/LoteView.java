@@ -72,7 +72,7 @@ public class LoteView extends JFrame {
         // =====================================================================
         // BLOQUE 1: REGISTRO DE NUEVO LOTE
         // =====================================================================
-        JLabel lblSuperficie = new JLabel("Superficie Terrenal (en metros cuadrados — m²)");
+        JLabel lblSuperficie = new JLabel("Superficie (en metros cuadrados — m²)");
         lblSuperficie.setFont(new Font("Arial", Font.PLAIN, 16));
         lblSuperficie.setForeground(new Color(80, 80, 80));
         gbc.gridy = fila++;
@@ -106,7 +106,7 @@ public class LoteView extends JFrame {
         // =====================================================================
         // BLOQUE 2: ASOCIACIÓN/ADJUDICACIÓN DE LOTES
         // =====================================================================
-        JLabel lblLotesDispo = new JLabel("Seleccionar Lote Territorial Disponible");
+        JLabel lblLotesDispo = new JLabel("Seleccionar Lote Disponible");
         lblLotesDispo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblLotesDispo.setForeground(new Color(80, 80, 80));
         gbc.gridy = fila++;

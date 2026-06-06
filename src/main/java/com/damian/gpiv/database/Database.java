@@ -28,13 +28,21 @@ public class Database {
             // Tabla de empresas
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS empresas (
-                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                     nombre TEXT NOT NULL,
-                     tipo TEXT CHECK(tipo IN ('radicada','interesada')),
-                     email TEXT,
-                     estado TEXT DEFAULT 'pendiente'
-                 );
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nombre TEXT NOT NULL,
+                    tipo TEXT CHECK(tipo IN ('radicada','interesada')),
+                    email TEXT,
+                    estado TEXT DEFAULT 'pendiente',
+                    cuit TEXT,
+                    actividad_principal TEXT,
+                    direccion TEXT,
+                    referente TEXT,
+                    telefono TEXT,
+                    rubro TEXT,
+                    descripcion_servicio TEXT
+                );
             """);
+
 
             // Tabla de proyectos
             stmt.execute("""
@@ -45,8 +53,18 @@ public class Database {
                     estado TEXT DEFAULT 'en evaluación',
                     empresa_id INTEGER,
                     FOREIGN KEY(empresa_id) REFERENCES empresas(id)
-                )
+                );
             """);
+
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS proyecto_archivos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    proyecto_id INTEGER NOT NULL,
+                    ruta_archivo TEXT NOT NULL,
+                    FOREIGN KEY(proyecto_id) REFERENCES proyectos(id)
+                );
+            """);
+
 
             // Tabla de lotes
             stmt.execute("""

@@ -1,5 +1,6 @@
 package com.damian.gpiv.gui;
 
+import com.damian.gpiv.models.Empresa;
 import com.damian.gpiv.models.Proyecto;
 import com.damian.gpiv.services.EmpresaService;
 import com.damian.gpiv.services.ProyectoService;
@@ -19,9 +20,12 @@ public class ProyectoView extends JFrame {
     private final String rolUsuario;
     private JTextField txtNombre;
     private JTextField txtDesc;
-    private JTextField txtEmpresa; // solo visible para administrador
+    private JComboBox<Empresa> comboEmpresas;
     private JTextArea output;
     private List<File> archivosAdjuntos = new ArrayList<>();
+    private EmpresaService empresaService = new EmpresaService();
+    private JList<Proyecto> listaProyectos;
+    private DefaultListModel<Proyecto> modeloProyectos = new DefaultListModel<>();
 
     // Constructor principal
     public ProyectoView(int empresaId, String rolUsuario) {
@@ -104,33 +108,56 @@ public class ProyectoView extends JFrame {
         // Bloque condicional exclusivo para Administradores
         if ("administrador".equalsIgnoreCase(rolUsuario)) {
             // --- Campo: Empresa ID ---
-            JLabel lblEmpresa = new JLabel("ID de la Empresa Asociada");
+            JLabel lblEmpresa = new JLabel("Empresa Asociada");
             lblEmpresa.setFont(new Font("Arial", Font.PLAIN, 16));
             lblEmpresa.setForeground(new Color(80, 80, 80));
             gbc.gridy = fila++;
             panelContenido.add(lblEmpresa, gbc);
 
-            txtEmpresa = new JTextField();
-            txtEmpresa.setFont(new Font("Arial", Font.PLAIN, 16));
-            txtEmpresa.setPreferredSize(new Dimension(300, 35));
-            gbc.gridy = fila++;
-            panelContenido.add(txtEmpresa, gbc);
+            comboEmpresas = new JComboBox<>();
+            comboEmpresas.setFont(new Font("Arial", Font.PLAIN, 16));
+            comboEmpresas.setPreferredSize(new Dimension(300, 35));
 
-            // --- Botón: Adjuntar PDF ---
-            JButton btnAdjuntar = new JButton(" Adjuntar Archivos PDF");
-            btnAdjuntar.setFont(new Font("Arial", Font.BOLD, 15));
-            btnAdjuntar.setBackground(new Color(240, 243, 247));
-            btnAdjuntar.setForeground(new Color(40, 50, 60));
-            btnAdjuntar.setFocusPainted(false);
-            btnAdjuntar.setPreferredSize(new Dimension(200, 38));
-            btnAdjuntar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
-            btnAdjuntar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            btnAdjuntar.addActionListener(this::adjuntarArchivos);
+            List<Empresa> empresas = empresaService.listar(); // asumimos que existe listar()
+            for (Empresa emp : empresas) {
+                comboEmpresas.addItem(emp);
+            }
 
             gbc.gridy = fila++;
-            gbc.insets = new Insets(10, 0, 10, 0);
-            panelContenido.add(btnAdjuntar, gbc);
-            gbc.insets = new Insets(5, 0, 5, 0); // Reset
+            panelContenido.add(comboEmpresas, gbc);
+
+//            // --- Botón: Adjuntar PDF ---
+//            JButton btnAdjuntar = new JButton(" Adjuntar Archivos PDF");
+//            btnAdjuntar.setFont(new Font("Arial", Font.BOLD, 15));
+//            btnAdjuntar.setBackground(new Color(240, 243, 247));
+//            btnAdjuntar.setForeground(new Color(40, 50, 60));
+//            btnAdjuntar.setFocusPainted(false);
+//            btnAdjuntar.setPreferredSize(new Dimension(200, 38));
+//            btnAdjuntar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
+//            btnAdjuntar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//            btnAdjuntar.addActionListener(this::adjuntarArchivos);
+//
+//            gbc.gridy = fila++;
+//            gbc.insets = new Insets(10, 0, 10, 0);
+//            panelContenido.add(btnAdjuntar, gbc);
+//            gbc.insets = new Insets(5, 0, 5, 0); // Reset
+//
+//            // --- Botón: Ver Archivos Adjuntos ---
+//            JButton btnVerAdjuntos = new JButton(" Ver Archivos Adjuntos");
+//            btnVerAdjuntos.setFont(new Font("Arial", Font.BOLD, 15));
+//            btnVerAdjuntos.setBackground(new Color(240, 243, 247));
+//            btnVerAdjuntos.setForeground(new Color(40, 50, 60));
+//            btnVerAdjuntos.setFocusPainted(false);
+//            btnVerAdjuntos.setPreferredSize(new Dimension(200, 38));
+//            btnVerAdjuntos.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
+//            btnVerAdjuntos.setCursor(new Cursor(Cursor.HAND_CURSOR));
+//            btnVerAdjuntos.addActionListener(this::abrirArchivosAdjuntos);
+//
+//            gbc.gridy = fila++;
+//            gbc.insets = new Insets(10, 0, 10, 0);
+//            panelContenido.add(btnVerAdjuntos, gbc);
+//            gbc.insets = new Insets(5, 0, 5, 0); // Reset
+
         }
 
         // ---------------------------------------------------------------------
@@ -166,17 +193,21 @@ public class ProyectoView extends JFrame {
         panelContenido.add(panelBotones, gbc);
 
         // --- Área de Consola/Salida ---
-        output = new JTextArea(10, 50);
-        output.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        output.setEditable(false);
-        output.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        listaProyectos = new JList<>(modeloProyectos);
+        listaProyectos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listaProyectos.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        listaProyectos.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
 
-        JScrollPane scroll = new JScrollPane(output);
+        JScrollPane scroll = new JScrollPane(listaProyectos);
 
         gbc.gridy = fila++;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 1.0; // Se estira dinámicamente para ocupar el resto de la ventana
+        gbc.weighty = 1.0;
         panelContenido.add(scroll, gbc);
+
+        output = new JTextArea(10, 50);
+        output.setEditable(false);
+        panelContenido.add(new JScrollPane(output), gbc);
 
         add(panelContenido, BorderLayout.CENTER);
         setVisible(true);
@@ -187,35 +218,67 @@ public class ProyectoView extends JFrame {
         this(0, "administrador");
     }
 
-    private void adjuntarArchivos(ActionEvent e) {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Files", "pdf"));
-
-        int result = fileChooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            archivosAdjuntos.clear();
-            archivosAdjuntos.addAll(Arrays.asList(fileChooser.getSelectedFiles()));
-            JOptionPane.showMessageDialog(this,
-                    "Se adjuntaron " + archivosAdjuntos.size() + " archivos PDF con éxito.",
-                    "Archivos Adjuntos",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+//    private void adjuntarArchivos(ActionEvent e) {
+//        JFileChooser fileChooser = new JFileChooser();
+//        fileChooser.setMultiSelectionEnabled(true);
+//        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Files", "pdf"));
+//
+//        int result = fileChooser.showOpenDialog(this);
+//        if (result == JFileChooser.APPROVE_OPTION) {
+//            archivosAdjuntos.clear();
+//            archivosAdjuntos.addAll(Arrays.asList(fileChooser.getSelectedFiles()));
+//            JOptionPane.showMessageDialog(this,
+//                    "Se adjuntaron " + archivosAdjuntos.size() + " archivos PDF con éxito.",
+//                    "Archivos Adjuntos",
+//                    JOptionPane.INFORMATION_MESSAGE);
+//        }
+//    }
+//
+//    private void abrirArchivosAdjuntos(ActionEvent e) {
+//        Proyecto proyectoSeleccionado = listaProyectos.getSelectedValue();
+//        if (proyectoSeleccionado == null) {
+//            JOptionPane.showMessageDialog(this,
+//                    "Debe seleccionar un proyecto de la lista.",
+//                    "Error",
+//                    JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
+//
+//        List<File> archivos = service.obtenerArchivosAdjuntos(proyectoSeleccionado.getId());
+//
+//        if (archivos.isEmpty()) {
+//            JOptionPane.showMessageDialog(this,
+//                    "Este proyecto no tiene archivos adjuntos.",
+//                    "Archivos Adjuntos",
+//                    JOptionPane.INFORMATION_MESSAGE);
+//            return;
+//        }
+//
+//        for (File archivo : archivos) {
+//            try {
+//                Desktop.getDesktop().open(archivo);
+//            } catch (Exception ex) {
+//                JOptionPane.showMessageDialog(this,
+//                        "No se pudo abrir el archivo: " + archivo.getName(),
+//                        "Error",
+//                        JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
+//    }
 
     private void registrar(ActionEvent e) {
         int idEmpresaAsociada = empresaId;
 
         if ("administrador".equalsIgnoreCase(rolUsuario)) {
-            try {
-                idEmpresaAsociada = Integer.parseInt(txtEmpresa.getText().trim());
-            } catch (NumberFormatException ex) {
+            Empresa empresaSeleccionada = (Empresa) comboEmpresas.getSelectedItem();
+            if (empresaSeleccionada == null) {
                 JOptionPane.showMessageDialog(this,
-                        "El ID de empresa debe ser un número entero válido",
+                        "Debe seleccionar una empresa válida",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            idEmpresaAsociada = empresaSeleccionada.getId();
         }
 
         EmpresaService empresaService = new EmpresaService();
@@ -238,19 +301,22 @@ public class ProyectoView extends JFrame {
         service.registrarConArchivos(proyecto, archivosAdjuntos);
 
         output.append("» PROYECTO REGISTRADO: " + proyecto.getNombre().toUpperCase() + "\n"
-                + "  • Empresa ID: " + idEmpresaAsociada + "\n"
+                + "  • Empresa: " + (rolUsuario.equalsIgnoreCase("administrador")
+                ? ((Empresa) comboEmpresas.getSelectedItem()).getNombre()
+                : idEmpresaAsociada) + "\n"
                 + "  • Documentos PDF Vinculados: " + archivosAdjuntos.size() + "\n"
                 + "──────────────────────────────────────────────────\n");
 
         // Limpiar formulario tras el éxito
         txtNombre.setText("");
         txtDesc.setText("");
-        if (txtEmpresa != null) txtEmpresa.setText("");
+        if (comboEmpresas != null) comboEmpresas.setSelectedIndex(-1); // limpiar selección
         archivosAdjuntos.clear();
     }
 
+
     private void listar(ActionEvent e) {
-        output.setText("");
+        modeloProyectos.clear();
         List<Proyecto> proyectos;
 
         if ("empresa".equalsIgnoreCase(rolUsuario)) {
@@ -260,17 +326,18 @@ public class ProyectoView extends JFrame {
         }
 
         if (proyectos.isEmpty()) {
-            output.setText("No se encontraron proyectos guardados en el sistema.");
+            JOptionPane.showMessageDialog(this,
+                    "No se encontraron proyectos guardados en el sistema.",
+                    "Aviso",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
         for (Proyecto p : proyectos) {
-            output.append("ID: " + p.getId() + " | " + p.getNombre().toUpperCase() + "\n"
-                    + "  • Estado Actual: " + p.getEstado().toUpperCase() + "\n"
-                    + "  • ID Empresa Propietaria: " + p.getEmpresaId() + "\n"
-                    + "──────────────────────────────────────────────────\n");
+            modeloProyectos.addElement(p);
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ProyectoView(0, "administrador"));
