@@ -23,7 +23,6 @@ public class EmpresaView extends JFrame {
     private JComboBox<String> comboRubro;
     private JTextField txtDescripcionServicio;
 
-    private JTextArea output;
 
     public EmpresaView() {
         super("Gestión de Empresas - GPIV");
@@ -162,7 +161,7 @@ public class EmpresaView extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(Color.WHITE);
 
-        JButton btnRegistrar = new JButton("Registrar Empresa");
+        JButton btnRegistrar = new JButton("Registrar Solicitud");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.setBackground(verdeFoto);
         btnRegistrar.setForeground(Color.BLACK);
@@ -173,33 +172,12 @@ public class EmpresaView extends JFrame {
         btnRegistrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegistrar.addActionListener(this::registrar);
 
-        JButton btnListar = new JButton("Listar Registros");
-        btnListar.setFont(new Font("Arial", Font.BOLD, 16));
-        btnListar.setBackground(new Color(240, 243, 247));
-        btnListar.setForeground(new Color(40, 50, 60));
-        btnListar.setFocusPainted(false);
-        btnListar.setPreferredSize(new Dimension(150, 45));
-        // BORDE NEGRO REMARCADO SOLICITADO
-        btnListar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        btnListar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnListar.addActionListener(this::listar);
-
         panelBotones.add(btnRegistrar);
-        panelBotones.add(btnListar);
         panelContenido.add(panelBotones);
 
-        // --- Área de Consola/Salida ---
-        output = new JTextArea(10, 50);
-        output.setFont(new Font("Monospaced", Font.PLAIN, 17));
-        output.setEditable(false);
-        output.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
-
-        JScrollPane scroll = new JScrollPane(output);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         JPanel panelAcciones = new JPanel(new BorderLayout());
         panelAcciones.add(panelBotones, BorderLayout.NORTH);
-        panelAcciones.add(scroll, BorderLayout.CENTER);
 
         JPanel panelPrincipal = new JPanel();
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
@@ -218,11 +196,6 @@ public class EmpresaView extends JFrame {
     }
 
     private void registrar(ActionEvent e) {
-        String tipo = (String) comboTipo.getSelectedItem();
-        String estado = "pendiente";
-        if ("radicada".equalsIgnoreCase(tipo)) {
-            estado = "aprobada";
-        }
 
         String nombre = txtNombre.getText().trim();
         String email = txtEmail.getText().trim();
@@ -233,31 +206,35 @@ public class EmpresaView extends JFrame {
         String rubro = (String) comboRubro.getSelectedItem();
         String descripcionServicio = txtDescripcionServicio.getText().trim();
 
-        // Validaciones básicas
-        if (nombre.isEmpty() || email.isEmpty() || cuit.isEmpty() ||
-                actividadPrincipal.isEmpty() || referente.isEmpty() || telefono.isEmpty() ||
-                descripcionServicio.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
+        if (nombre.isEmpty() || email.isEmpty() || cuit.isEmpty()
+                || actividadPrincipal.isEmpty()
+                || referente.isEmpty()
+                || telefono.isEmpty()
+                || descripcionServicio.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
                     "Debes completar todos los campos obligatorios",
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
             return;
         }
 
         if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-            JOptionPane.showMessageDialog(this,
+
+            JOptionPane.showMessageDialog(
+                    this,
                     "El email ingresado no tiene un formato válido",
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
             return;
         }
 
-        Empresa empresa = new Empresa(
+        int solicitudId = service.registrarSolicitud(
                 nombre,
-                0,
-                tipo,
                 email,
-                estado,
                 cuit,
                 actividadPrincipal,
                 txtDireccion.getText().trim(),
@@ -267,16 +244,15 @@ public class EmpresaView extends JFrame {
                 descripcionServicio
         );
 
-        service.registrar(empresa);
-        output.append("» EMPRESA REGISTRADA: " + empresa.getNombre().toUpperCase() +
-                "\n  CUIT: " + empresa.getCuit() +
-                " | Actividad: " + empresa.getActividadPrincipal() +
-                " | Referente: " + empresa.getReferente() +
-                " | Teléfono: " + empresa.getTelefono() +
-                " | Rubro: " + empresa.getRubro() +
-                "\n──────────────────────────────────────────────────\n");
+        JOptionPane.showMessageDialog(
+                this,
+                "Solicitud de radicación enviada correctamente.\nQuedará pendiente de aprobación por un administrador.",
+                "Solicitud enviada",
+                JOptionPane.INFORMATION_MESSAGE
+        );
 
-        // Limpiar campos
+
+
         txtNombre.setText("");
         txtEmail.setText("");
         txtCuit.setText("");
@@ -285,24 +261,16 @@ public class EmpresaView extends JFrame {
         txtReferente.setText("");
         txtTelefono.setText("");
         txtDescripcionServicio.setText("");
+
+        dispose();
+
+        SwingUtilities.invokeLater(
+                () -> new ProyectoView(solicitudId, "empresa")
+        );
     }
 
 
-    private void listar(ActionEvent e) {
-        List<Empresa> empresas = service.listar();
-        output.setText("");
-        if (empresas.isEmpty()) {
-            output.setText("No hay empresas registradas en el sistema actualmente.");
-            return;
-        }
-        for (Empresa emp : empresas) {
-            output.append("ID: " + emp.getId() + " | " + emp.getNombre().toUpperCase() + "\n"
-                    + "  • Tipo: " + emp.getTipo() + "\n"
-                    + "  • Email: " + emp.getEmail() + "\n"
-                    + "  • Estado: " + emp.getEstado() + "\n"
-                    + "──────────────────────────────────────────────────\n");
-        }
-    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(EmpresaView::new);

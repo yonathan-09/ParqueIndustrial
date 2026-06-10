@@ -209,14 +209,15 @@ public class LoginView extends JFrame {
         JPanel panelBotonesSecundarios = new JPanel(new GridLayout(1, 2, 15, 0));
         panelBotonesSecundarios.setBackground(Color.WHITE);
 
-        JButton btnRegistrar = new JButton("Registrar");
-        btnRegistrar.setFont(new Font("Arial", Font.PLAIN, 16));
-        btnRegistrar.addActionListener(e -> {
-            new RegistroUsuarioView();
+
+        JButton btnSolicitarRadicacion = new JButton("Solicitar Radicación");
+        btnSolicitarRadicacion.setFont(new Font("Arial", Font.PLAIN, 16));
+        btnSolicitarRadicacion.addActionListener(e -> {
+            new EmpresaView();
             dispose();
         });
 
-        panelBotonesSecundarios.add(btnRegistrar);
+        panelBotonesSecundarios.add(btnSolicitarRadicacion);
 
         gbc.gridy = 7;
         gbc.insets = new java.awt.Insets(10, 0, 0, 0);

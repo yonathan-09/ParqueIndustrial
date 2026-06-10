@@ -43,17 +43,35 @@ public class Database {
                 );
             """);
 
+            // Tabla de solicitudes de radicación
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS solicitudes_radicacion (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nombre TEXT NOT NULL,
+                    email TEXT,
+                    cuit TEXT,
+                    actividad_principal TEXT,
+                    direccion TEXT,
+                    referente TEXT,
+                    telefono TEXT,
+                    rubro TEXT,
+                    descripcion_servicio TEXT,
+                    estado TEXT DEFAULT 'pendiente'
+                );
+            """);
 
             // Tabla de proyectos
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS proyectos (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nombre TEXT NOT NULL,
-                    descripcion TEXT,
-                    estado TEXT DEFAULT 'en evaluación',
-                    empresa_id INTEGER,
-                    FOREIGN KEY(empresa_id) REFERENCES empresas(id)
-                );
+                      id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      nombre TEXT NOT NULL,
+                      descripcion TEXT,
+                      estado TEXT DEFAULT 'en evaluación',
+                      empresa_id INTEGER,
+                      solicitud_id INTEGER,
+                      FOREIGN KEY(empresa_id) REFERENCES empresas(id),
+                      FOREIGN KEY(solicitud_id) REFERENCES solicitudes_radicacion(id)
+                  );
             """);
 
             stmt.execute("""
@@ -98,6 +116,7 @@ public class Database {
                     FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
                 )
             """);
+
 
             System.out.println("Base de datos inicializada correctamente.");
 

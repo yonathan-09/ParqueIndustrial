@@ -91,13 +91,13 @@ public class VentanaPrincipal extends JFrame {
         // Inyección de botones según rol
         switch (rol.toLowerCase()) {
             case "administrador":
-                addWebButton(cuerpoWeb, gbc, "Gestionar Empresas", this::openEmpresas);
-                addWebButton(cuerpoWeb, gbc, "Evaluar Empresas", this::openEvaluarEmpresas);
+                addWebButton(cuerpoWeb, gbc, "Evaluar Solicitudes", this::openEvaluarEmpresas);
                 addWebButton(cuerpoWeb, gbc, "Gestionar Proyectos", this::openProyectos);
                 addWebButton(cuerpoWeb, gbc, "Evaluar Proyectos", this::openEvaluarProyectos);
                 addWebButton(cuerpoWeb, gbc, "Gestionar Lotes", this::openLotes);
                 addWebButton(cuerpoWeb, gbc, "Ver Reportes", this::openReportes);
                 addWebButton(cuerpoWeb, gbc, "Mapa Interactivo de Lotes", this::openLoteMap);
+                addWebButton(cuerpoWeb, gbc, "Registrar un nuevo usuario", this::openRegistroUsuario);
                 break;
 
             case "empresa":
@@ -186,7 +186,7 @@ public class VentanaPrincipal extends JFrame {
     private void openLotes() { SwingUtilities.invokeLater(LoteView::new); }
     private void openReportes() { SwingUtilities.invokeLater(ReporteView::new); }
     private void openLoteMap() { SwingUtilities.invokeLater(LoteMapView::new); }
-
+    private void openRegistroUsuario() { SwingUtilities.invokeLater(RegistroUsuarioView::new); }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new VentanaPrincipal("administrador"));
     }

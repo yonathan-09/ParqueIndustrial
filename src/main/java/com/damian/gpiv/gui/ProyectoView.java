@@ -16,22 +16,21 @@ import java.util.List;
 
 public class ProyectoView extends JFrame {
     private final ProyectoService service;
-    private final int empresaId;
+    private final int solicitudId;
     private final String rolUsuario;
     private JTextField txtNombre;
     private JTextField txtDesc;
     private JComboBox<Empresa> comboEmpresas;
-    private JTextArea output;
     private List<File> archivosAdjuntos = new ArrayList<>();
     private EmpresaService empresaService = new EmpresaService();
     private JList<Proyecto> listaProyectos;
     private DefaultListModel<Proyecto> modeloProyectos = new DefaultListModel<>();
 
     // Constructor principal
-    public ProyectoView(int empresaId, String rolUsuario) {
+    public ProyectoView(int solicitudId, String rolUsuario) {
         super("Gestión de Proyectos - GPIV");
         this.service = new ProyectoService();
-        this.empresaId = empresaId;
+        this.solicitudId = solicitudId;
         this.rolUsuario = rolUsuario;
 
         // Base estructural limpia
@@ -176,27 +175,15 @@ public class ProyectoView extends JFrame {
         btnRegistrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegistrar.addActionListener(this::registrar);
 
-        JButton btnListar = new JButton("Listar Proyectos");
-        btnListar.setFont(new Font("Arial", Font.BOLD, 16));
-        btnListar.setBackground(new Color(240, 243, 247));
-        btnListar.setForeground(new Color(40, 50, 60));
-        btnListar.setFocusPainted(false);
-        btnListar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
-        btnListar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnListar.addActionListener(this::listar);
+
 
         panelBotones.add(btnRegistrar);
-        panelBotones.add(btnListar);
+
 
         gbc.gridy = fila++;
         gbc.insets = new Insets(15, 0, 15, 0);
         panelContenido.add(panelBotones, gbc);
 
-        // --- Área de Consola/Salida ---
-        listaProyectos = new JList<>(modeloProyectos);
-        listaProyectos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        listaProyectos.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        listaProyectos.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
 
         JScrollPane scroll = new JScrollPane(listaProyectos);
 
@@ -205,9 +192,6 @@ public class ProyectoView extends JFrame {
         gbc.weighty = 1.0;
         panelContenido.add(scroll, gbc);
 
-        output = new JTextArea(10, 50);
-        output.setEditable(false);
-        panelContenido.add(new JScrollPane(output), gbc);
 
         add(panelContenido, BorderLayout.CENTER);
         setVisible(true);
@@ -267,7 +251,7 @@ public class ProyectoView extends JFrame {
 //    }
 
     private void registrar(ActionEvent e) {
-        int idEmpresaAsociada = empresaId;
+        int idEmpresaAsociada = solicitudId;
 
         if ("administrador".equalsIgnoreCase(rolUsuario)) {
             Empresa empresaSeleccionada = (Empresa) comboEmpresas.getSelectedItem();
@@ -281,37 +265,32 @@ public class ProyectoView extends JFrame {
             idEmpresaAsociada = empresaSeleccionada.getId();
         }
 
-        EmpresaService empresaService = new EmpresaService();
-        if (!empresaService.existeEmpresa(idEmpresaAsociada)) {
-            JOptionPane.showMessageDialog(this,
-                    "No se encontró ninguna empresa registrada con el ID ingresado",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+//        EmpresaService empresaService = new EmpresaService();
+//        if (!empresaService.existeEmpresa(idEmpresaAsociada)) {
+//            JOptionPane.showMessageDialog(this,
+//                    "No se encontró ninguna empresa registrada con el ID ingresado",
+//                    "Error",
+//                    JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
 
         Proyecto proyecto = new Proyecto(
                 0,
                 txtNombre.getText().trim(),
                 txtDesc.getText().trim(),
                 "pendiente",
-                idEmpresaAsociada
+                null,
+                solicitudId
         );
 
         service.registrarConArchivos(proyecto, archivosAdjuntos);
 
-        output.append("» PROYECTO REGISTRADO: " + proyecto.getNombre().toUpperCase() + "\n"
-                + "  • Empresa: " + (rolUsuario.equalsIgnoreCase("administrador")
-                ? ((Empresa) comboEmpresas.getSelectedItem()).getNombre()
-                : idEmpresaAsociada) + "\n"
-                + "  • Documentos PDF Vinculados: " + archivosAdjuntos.size() + "\n"
-                + "──────────────────────────────────────────────────\n");
 
-        // Limpiar formulario tras el éxito
-        txtNombre.setText("");
-        txtDesc.setText("");
-        if (comboEmpresas != null) comboEmpresas.setSelectedIndex(-1); // limpiar selección
-        archivosAdjuntos.clear();
+    // Cerrar ProyectoView
+        dispose();
+
+    // Volver al Login
+        SwingUtilities.invokeLater(LoginView::new);
     }
 
 
@@ -320,7 +299,7 @@ public class ProyectoView extends JFrame {
         List<Proyecto> proyectos;
 
         if ("empresa".equalsIgnoreCase(rolUsuario)) {
-            proyectos = service.listarPorEmpresa(empresaId);
+            proyectos = service.listarPorEmpresa(solicitudId);
         } else {
             proyectos = service.listar();
         }

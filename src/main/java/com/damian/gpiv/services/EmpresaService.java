@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Statement;
 
 public class EmpresaService {
 
@@ -45,6 +46,150 @@ public class EmpresaService {
 
         } catch (SQLException e) {
             System.err.println("Error al registrar empresa: " + e.getMessage());
+        }
+    }
+
+    public int registrarSolicitud(
+            String nombre,
+            String email,
+            String cuit,
+            String actividadPrincipal,
+            String direccion,
+            String referente,
+            String telefono,
+            String rubro,
+            String descripcionServicio) {
+
+        String sql = """
+        INSERT INTO solicitudes_radicacion
+        (nombre,email,cuit,actividad_principal,direccion,referente,telefono,rubro,descripcion_servicio,estado)
+        VALUES(?,?,?,?,?,?,?,?,?,'pendiente')
+    """;
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt =
+                     conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setString(1, nombre);
+            pstmt.setString(2, email);
+            pstmt.setString(3, cuit);
+            pstmt.setString(4, actividadPrincipal);
+            pstmt.setString(5, direccion);
+            pstmt.setString(6, referente);
+            pstmt.setString(7, telefono);
+            pstmt.setString(8, rubro);
+            pstmt.setString(9, descripcionServicio);
+
+            pstmt.executeUpdate();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+
+            if(rs.next()) {
+                return rs.getInt(1);
+            }
+
+
+
+        } catch (SQLException e) {
+            System.err.println("Error al registrar solicitud: " + e.getMessage());
+        }
+
+        return -1;
+    }
+
+    public List<Empresa> listarSolicitudes() {
+
+        List<Empresa> solicitudes = new ArrayList<>();
+
+        String sql = "SELECT * FROM solicitudes_radicacion";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+
+                Empresa empresa = new Empresa(
+                        rs.getString("nombre"),
+                        rs.getInt("id"),
+                        "interesada",
+                        rs.getString("email"),
+                        rs.getString("estado"),
+                        rs.getString("cuit"),
+                        rs.getString("actividad_principal"),
+                        rs.getString("direccion"),
+                        rs.getString("referente"),
+                        rs.getString("telefono"),
+                        rs.getString("rubro"),
+                        rs.getString("descripcion_servicio")
+                );
+
+                solicitudes.add(empresa);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al listar solicitudes: " + e.getMessage());
+        }
+
+        return solicitudes;
+    }
+
+    public void aprobarSolicitud(int solicitudId) {
+
+        String buscar = "SELECT * FROM solicitudes_radicacion WHERE id=?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(buscar)) {
+
+            pstmt.setInt(1, solicitudId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+
+                Empresa empresa = new Empresa(
+                        rs.getString("nombre"),
+                        0,
+                        "interesada",
+                        rs.getString("email"),
+                        "aprobada",
+                        rs.getString("cuit"),
+                        rs.getString("actividad_principal"),
+                        rs.getString("direccion"),
+                        rs.getString("referente"),
+                        rs.getString("telefono"),
+                        rs.getString("rubro"),
+                        rs.getString("descripcion_servicio")
+                );
+
+                registrar(empresa);
+
+                eliminarSolicitud(solicitudId);
+
+                System.out.println("Solicitud aprobada.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al aprobar solicitud: " + e.getMessage());
+        }
+    }
+
+    public void rechazarSolicitud(int solicitudId) {
+        eliminarSolicitud(solicitudId);
+    }
+
+    private void eliminarSolicitud(int solicitudId) {
+
+        String sql = "DELETE FROM solicitudes_radicacion WHERE id=?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, solicitudId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar solicitud: " + e.getMessage());
         }
     }
 

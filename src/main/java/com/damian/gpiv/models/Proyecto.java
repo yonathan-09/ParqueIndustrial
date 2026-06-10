@@ -1,7 +1,7 @@
 package com.damian.gpiv.models;
 
 public class Proyecto {
-
+    private Integer solicitudId;
     private int id;
     private String nombre;
     private String descripcion;
@@ -15,13 +15,38 @@ public class Proyecto {
         this.estado = estado;
         this.empresaId = empresaId;
     }
+    public Proyecto(
+            int id,
+            String nombre,
+            String descripcion,
+            String estado,
+            Integer empresaId) {
 
-    public Proyecto(int id, String nombre, String descripcion, String estado, Integer empresaId) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.estado = estado;
         this.empresaId = empresaId;
+    }
+
+    public Proyecto(
+            int id,
+            String nombre,
+            String descripcion,
+            String estado,
+            Integer empresaId,
+            Integer solicitudId) {
+
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.estado = estado;
+        this.empresaId = empresaId;
+        this.solicitudId = solicitudId;
+    }
+
+    public Integer getSolicitudId() {
+        return solicitudId;
     }
 
     public int getId() {

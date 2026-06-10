@@ -1,7 +1,8 @@
 package com.damian.gpiv.gui;
 
-import com.damian.gpiv.models.Empresa;
-import com.damian.gpiv.services.EmpresaService;
+import com.damian.gpiv.models.SolicitudRadicacion;
+import com.damian.gpiv.services.ProyectoService;
+import com.damian.gpiv.services.SolicitudRadicacionService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,13 +12,13 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
 public class EvaluarEmpresaView extends JFrame {
-    private final EmpresaService service;
+    private final SolicitudRadicacionService service;
     private JTextArea output;
     private JTextField txtEmpresaId;
 
     public EvaluarEmpresaView() {
         super("Evaluar Empresas Interesadas");
-        this.service = new EmpresaService();
+        this.service = new SolicitudRadicacionService();
 
         // Dimensiones optimizadas para la interfaz web con letra grande
         setSize(850, 550);
@@ -129,39 +130,60 @@ public class EvaluarEmpresaView extends JFrame {
     }
 
     private void evaluarEmpresa(String nuevoEstado) {
+
         try {
-            int empresaId = Integer.parseInt(txtEmpresaId.getText());
-            service.actualizarEstado(empresaId, nuevoEstado);
 
-            // >>> ESTO ES LO QUE SE AÑADE <<<
-            // Abre el cartel flotante de confirmación en la pantalla
+            int solicitudId = Integer.parseInt(txtEmpresaId.getText());
+
+            if (nuevoEstado.equals("aprobada")) {
+
+                ProyectoService proyectoService = new ProyectoService();
+
+                if (!proyectoService.existeProyectoParaSolicitud(solicitudId)) {
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "No se puede aprobar la solicitud.\nLa empresa todavía no presentó un proyecto."
+                    );
+
+                    return;
+                }
+
+                service.aprobarSolicitud(solicitudId);
+
+            } else {
+
+                service.rechazarSolicitud(solicitudId);
+            }
+
             JOptionPane.showMessageDialog(this,
-                    "La empresa con ID " + empresaId + " fue " + nuevoEstado + " correctamente.",
-                    "Operación Exitosa",
-                    JOptionPane.INFORMATION_MESSAGE);
+                    "Solicitud actualizada correctamente.");
 
-            // Limpia el cuadro de texto para dejarlo listo para el siguiente ID
             txtEmpresaId.setText("");
-            // ---------------------------------
 
         } catch (NumberFormatException ex) {
+
             JOptionPane.showMessageDialog(this,
-                    "El ID debe ser un número",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    "Debe ingresar un ID válido.");
         }
     }
 
     private void listar(ActionEvent e) {
-        List<Empresa> empresas = service.listar();
+
+        List<SolicitudRadicacion> solicitudes =
+                service.listarPendientes();
+
         output.setText("");
-        for (Empresa emp : empresas) {
-            if ("interesada".equalsIgnoreCase(emp.getTipo())) {
-                output.append("Empresa " + emp.getId() +
-                        " | Nombre: " + emp.getNombre() +
-                        " | Tipo: " + emp.getTipo() +
-                        " | Estado: " + emp.getEstado() + "\n");
-            }
+
+        for (SolicitudRadicacion s : solicitudes) {
+
+            output.append(
+                    "ID: " + s.getId()
+                            + " | Empresa: " + s.getNombre()
+                            + " | CUIT: " + s.getCuit()
+                            + " | Estado: " + s.getEstado()
+                            + "\n"
+            );
         }
     }
 

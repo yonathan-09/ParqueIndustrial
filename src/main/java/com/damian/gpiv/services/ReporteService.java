@@ -14,23 +14,47 @@ import org.jfree.data.general.DefaultPieDataset;
 public class ReporteService {
 
     public void generarReporteEmpresas() {
-        String sql = "SELECT tipo, COUNT(*) FROM empresas GROUP BY tipo";
 
-        try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+        String sqlEmpresas = "SELECT COUNT(*) FROM empresas";
+        String sqlSolicitudes = """
+            SELECT COUNT(*)
+            FROM solicitudes_radicacion
+            WHERE estado = 'pendiente'
+            """;
+
+        try (Connection conn = Database.getConnection()) {
 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            while (rs.next()) {
-                String tipo = rs.getString(1);
-                int cantidad = rs.getInt(2);
-                dataset.addValue(cantidad, "Empresas", tipo);
+            // Empresas aprobadas (radicadas)
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlEmpresas);
+                 ResultSet rs = pstmt.executeQuery()) {
+
+                if (rs.next()) {
+                    dataset.addValue(
+                            rs.getInt(1),
+                            "Empresas",
+                            "Radicadas"
+                    );
+                }
+            }
+
+            // Empresas interesadas (solicitudes pendientes)
+            try (PreparedStatement pstmt = conn.prepareStatement(sqlSolicitudes);
+                 ResultSet rs = pstmt.executeQuery()) {
+
+                if (rs.next()) {
+                    dataset.addValue(
+                            rs.getInt(1),
+                            "Empresas",
+                            "Interesadas"
+                    );
+                }
             }
 
             JFreeChart chart = ChartFactory.createBarChart(
-                    "Empresas por tipo",
-                    "Tipo",
+                    "Empresas del Parque Industrial",
+                    "Estado",
                     "Cantidad",
                     dataset
             );
@@ -40,7 +64,10 @@ public class ReporteService {
             frame.setVisible(true);
 
         } catch (SQLException e) {
-            System.err.println("Error al generar reporte de empresas: " + e.getMessage());
+            System.err.println(
+                    "Error al generar reporte de empresas: "
+                            + e.getMessage()
+            );
         }
     }
 

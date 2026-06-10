@@ -26,7 +26,10 @@ public class ProyectoService {
 
     // Registrar proyecto sin archivos
     public void registrar(Proyecto proyecto) {
-        String sql = "INSERT INTO proyectos (nombre, descripcion, estado, empresa_id) VALUES (?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO proyectos " +
+                        "(nombre, descripcion, estado, empresa_id, solicitud_id) " +
+                        "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -38,6 +41,12 @@ public class ProyectoService {
                 pstmt.setInt(4, proyecto.getEmpresaId());
             } else {
                 pstmt.setNull(4, java.sql.Types.INTEGER);
+            }
+
+            if (proyecto.getSolicitudId() != null) {
+                pstmt.setInt(5, proyecto.getSolicitudId());
+            } else {
+                pstmt.setNull(5, java.sql.Types.INTEGER);
             }
 
             pstmt.executeUpdate();
@@ -124,7 +133,8 @@ public class ProyectoService {
                         rs.getString("nombre"),
                         rs.getString("descripcion"),
                         rs.getString("estado"),
-                        rs.getInt("empresa_id")
+                        rs.getInt("empresa_id"),
+                        rs.getInt("solicitud_id")
                 );
 
                 // Buscar la empresa asociada y setearla en el proyecto
@@ -139,6 +149,32 @@ public class ProyectoService {
         }
 
         return proyectos;
+    }
+
+    public boolean existeProyectoParaSolicitud(int solicitudId) {
+
+        String sql = """
+    SELECT COUNT(*)
+    FROM proyectos
+    WHERE solicitud_id = ?
+""";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, solicitudId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
 
@@ -159,7 +195,8 @@ public class ProyectoService {
                         rs.getString("nombre"),
                         rs.getString("descripcion"),
                         rs.getString("estado"),
-                        rs.getInt("empresa_id")
+                        rs.getInt("empresa_id"),
+                        rs.getInt("solicitud_id")
                 );
 
                 // Buscar la empresa asociada y setearla en el proyecto
