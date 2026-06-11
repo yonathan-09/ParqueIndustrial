@@ -94,6 +94,48 @@ public class ProyectoService {
         }
     }
 
+    public Proyecto buscarPorId(int id) {
+
+        String sql =
+                "SELECT * FROM proyectos WHERE id=?";
+
+        try(Connection conn = Database.getConnection();
+            PreparedStatement pstmt =
+                    conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()) {
+
+                Integer empresaId = null;
+
+                int valorEmpresa =
+                        rs.getInt("empresa_id");
+
+                if(!rs.wasNull()) {
+                    empresaId = valorEmpresa;
+                }
+
+                return new Proyecto(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getString("estado"),
+                        empresaId,
+                        rs.getInt("solicitud_id"),
+                        rs.getDouble("superficie_lote")
+                );
+            }
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public List<File> obtenerArchivosAdjuntos(int proyectoId) {
         List<File> archivos = new ArrayList<>();
         String sql = "SELECT ruta_archivo FROM proyecto_archivos WHERE proyecto_id = ?";

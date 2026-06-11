@@ -21,7 +21,7 @@ public class EvaluarEmpresaView extends JFrame {
         this.service = new SolicitudRadicacionService();
 
         // Dimensiones optimizadas para la interfaz web con letra grande
-        setSize(850, 550);
+        setSize(950, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -96,6 +96,11 @@ public class EvaluarEmpresaView extends JFrame {
         btnListar.addActionListener(this::listar);
         panelAcciones.add(btnListar);
 
+        BotonRedondeado btnVerDetalle = new BotonRedondeado("Ver Detalle");
+        configurarBoton(btnVerDetalle, new Color(52, 152, 219));
+        btnVerDetalle.addActionListener(e -> verDetalleEmpresa());
+        panelAcciones.add(btnVerDetalle);
+
         gbc.gridy = fila++;
         gbc.insets = new Insets(10, 0, 15, 0);
         panelContenido.add(panelAcciones, gbc);
@@ -127,6 +132,37 @@ public class EvaluarEmpresaView extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         boton.setPreferredSize(new Dimension(180, 48));
+    }
+
+    private void verDetalleEmpresa() {
+
+        try {
+
+            int solicitudId =
+                    Integer.parseInt(txtEmpresaId.getText());
+
+            SolicitudRadicacion solicitud =
+                    service.buscarPorId(solicitudId);
+
+            if (solicitud == null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No existe la solicitud"
+                );
+
+                return;
+            }
+
+            new DetalleEmpresaView(solicitud);
+
+        } catch (NumberFormatException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese un ID válido"
+            );
+        }
     }
 
     private void evaluarEmpresa(String nuevoEstado) {

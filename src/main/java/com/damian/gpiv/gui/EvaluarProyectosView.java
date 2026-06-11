@@ -20,7 +20,7 @@ public class EvaluarProyectosView extends JFrame {
         this.service = new ProyectoService();
 
         // Tamaño mediano y optimizado para una lectura cómoda
-        setSize(850, 550);
+        setSize(1000, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -95,6 +95,20 @@ public class EvaluarProyectosView extends JFrame {
         btnListar.addActionListener(this::listar);
         panelAcciones.add(btnListar);
 
+        BotonRedondeado btnDetalle =
+                new BotonRedondeado("Ver Proyecto");
+
+        configurarBoton(
+                btnDetalle,
+                new Color(52, 152, 219)
+        );
+
+        btnDetalle.addActionListener(
+                e -> verDetalleProyecto()
+        );
+
+        panelAcciones.add(btnDetalle);
+
         gbc.gridy = fila++;
         gbc.insets = new Insets(10, 0, 15, 0);
         panelContenido.add(panelAcciones, gbc);
@@ -133,6 +147,37 @@ public class EvaluarProyectosView extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         boton.setPreferredSize(new Dimension(190, 48)); // Botones medianos estilizados
+    }
+
+    private void verDetalleProyecto() {
+
+        try {
+
+            int proyectoId =
+                    Integer.parseInt(txtProyectoId.getText());
+
+            Proyecto proyecto =
+                    service.buscarPorId(proyectoId);
+
+            if (proyecto == null) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Proyecto inexistente"
+                );
+
+                return;
+            }
+
+            new DetalleProyectoView(proyecto);
+
+        } catch (NumberFormatException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese un ID válido"
+            );
+        }
     }
 
     private void evaluarProyecto(String nuevoEstado) {
