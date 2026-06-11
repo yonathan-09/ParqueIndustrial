@@ -26,27 +26,27 @@ public class ProyectoService {
 
     // Registrar proyecto sin archivos
     public void registrar(Proyecto proyecto) {
-        String sql =
-                "INSERT INTO proyectos " +
-                        "(nombre, descripcion, estado, empresa_id, solicitud_id) " +
-                        "VALUES (?, ?, ?, ?, ?)";
+
+
+        String sql = "INSERT INTO proyectos (nombre, descripcion, superficie_lote, estado, empresa_id, solicitud_id) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, proyecto.getNombre());
             pstmt.setString(2, proyecto.getDescripcion());
-            pstmt.setString(3, proyecto.getEstado());
+            pstmt.setDouble(3, proyecto.getSuperficieLote());
+            pstmt.setString(4, proyecto.getEstado());
             if (proyecto.getEmpresaId() != null) {
-                pstmt.setInt(4, proyecto.getEmpresaId());
+                pstmt.setInt(5, proyecto.getEmpresaId());
             } else {
-                pstmt.setNull(4, java.sql.Types.INTEGER);
+                pstmt.setNull(5, java.sql.Types.INTEGER);
             }
 
             if (proyecto.getSolicitudId() != null) {
-                pstmt.setInt(5, proyecto.getSolicitudId());
+                pstmt.setInt(6, proyecto.getSolicitudId());
             } else {
-                pstmt.setNull(5, java.sql.Types.INTEGER);
+                pstmt.setNull(6, java.sql.Types.INTEGER);
             }
 
             pstmt.executeUpdate();
@@ -118,6 +118,8 @@ public class ProyectoService {
 
     // Listar proyectos
     public List<Proyecto> listar() {
+        System.out.println("=== LISTANDO PROYECTOS ===");
+
         List<Proyecto> proyectos = new ArrayList<>();
         String sql = "SELECT * FROM proyectos";
 
@@ -128,18 +130,35 @@ public class ProyectoService {
             EmpresaService empresaService = new EmpresaService();
 
             while (rs.next()) {
+
+                System.out.println(
+                        "ID=" + rs.getInt("id")
+                                + " Nombre=" + rs.getString("nombre")
+                                + " Estado=" + rs.getString("estado")
+                );
+
+                Integer empresaId = null;
+
+                int valorEmpresa = rs.getInt("empresa_id");
+
+                if (!rs.wasNull()) {
+                    empresaId = valorEmpresa;
+                }
+
                 Proyecto proyecto = new Proyecto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("descripcion"),
                         rs.getString("estado"),
-                        rs.getInt("empresa_id"),
-                        rs.getInt("solicitud_id")
+                        empresaId,
+                        rs.getInt("solicitud_id"),
+                        rs.getDouble("superficie_lote")
                 );
 
-                // Buscar la empresa asociada y setearla en el proyecto
-                Empresa empresa = empresaService.buscarPorId(rs.getInt("empresa_id"));
-                proyecto.setEmpresa(empresa);
+                if (empresaId != null) {
+                    Empresa empresa = empresaService.buscarPorId(empresaId);
+                    proyecto.setEmpresa(empresa);
+                }
 
                 proyectos.add(proyecto);
             }
@@ -196,7 +215,8 @@ public class ProyectoService {
                         rs.getString("descripcion"),
                         rs.getString("estado"),
                         rs.getInt("empresa_id"),
-                        rs.getInt("solicitud_id")
+                        rs.getInt("solicitud_id"),
+                        rs.getDouble("superficie_lote")
                 );
 
                 // Buscar la empresa asociada y setearla en el proyecto

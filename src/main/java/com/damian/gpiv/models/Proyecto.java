@@ -7,35 +7,30 @@ public class Proyecto {
     private String descripcion;
     private String estado;
     private Integer empresaId;
+    private double superficieLote;
     private Empresa empresa;
 
-    public Proyecto(String nombre, String descripcion, String estado, Integer empresaId) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.estado = estado;
-        this.empresaId = empresaId;
-    }
     public Proyecto(
-            int id,
             String nombre,
             String descripcion,
             String estado,
-            Integer empresaId) {
+            Integer empresaId,
+            double superficieLote) {
 
-        this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.estado = estado;
         this.empresaId = empresaId;
+        this.superficieLote = superficieLote;
     }
-
     public Proyecto(
             int id,
             String nombre,
             String descripcion,
             String estado,
             Integer empresaId,
-            Integer solicitudId) {
+            Integer solicitudId,
+            double superficieLote) {
 
         this.id = id;
         this.nombre = nombre;
@@ -43,7 +38,10 @@ public class Proyecto {
         this.estado = estado;
         this.empresaId = empresaId;
         this.solicitudId = solicitudId;
+        this.superficieLote = superficieLote;
     }
+
+
 
     public Integer getSolicitudId() {
         return solicitudId;
@@ -67,6 +65,10 @@ public class Proyecto {
 
     public Integer getEmpresaId() {
         return empresaId;
+    }
+
+    public double getSuperficieLote() {
+        return superficieLote;
     }
 
     public Empresa getEmpresa() {

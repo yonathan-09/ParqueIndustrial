@@ -193,18 +193,29 @@ public class EmpresaService {
         }
     }
 
-    public boolean existeEmpresa(int empresaId) {
+    public boolean existeEmpresa(Integer empresaId) {
+
+        if (empresaId == null) {
+            return false;
+        }
+
         String sql = "SELECT COUNT(*) FROM empresas WHERE id = ?";
+
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, empresaId);
+
             ResultSet rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
+
         } catch (SQLException e) {
             System.err.println("Error al verificar empresa: " + e.getMessage());
         }
+
         return false;
     }
 

@@ -161,7 +161,7 @@ public class EmpresaView extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(Color.WHITE);
 
-        JButton btnRegistrar = new JButton("Registrar Solicitud");
+        JButton btnRegistrar = new JButton("Siguiente");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.setBackground(verdeFoto);
         btnRegistrar.setForeground(Color.BLACK);

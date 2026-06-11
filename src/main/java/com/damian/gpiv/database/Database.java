@@ -63,15 +63,15 @@ public class Database {
             // Tabla de proyectos
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS proyectos (
-                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                      nombre TEXT NOT NULL,
-                      descripcion TEXT,
-                      estado TEXT DEFAULT 'en evaluación',
-                      empresa_id INTEGER,
-                      solicitud_id INTEGER,
-                      FOREIGN KEY(empresa_id) REFERENCES empresas(id),
-                      FOREIGN KEY(solicitud_id) REFERENCES solicitudes_radicacion(id)
-                  );
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nombre TEXT NOT NULL,
+                        descripcion TEXT,
+                        superficie_lote REAL,
+                        estado TEXT DEFAULT 'en evaluación',
+                        empresa_id INTEGER,
+                        solicitud_id INTEGER,
+                        FOREIGN KEY(empresa_id) REFERENCES empresas(id)
+                    );
             """);
 
             stmt.execute("""

@@ -130,7 +130,9 @@ public class SolicitudRadicacionService {
             """;
 
             try(PreparedStatement pstmt =
-                        conn.prepareStatement(insertEmpresa)) {
+                        conn.prepareStatement(
+                                insertEmpresa,
+                                Statement.RETURN_GENERATED_KEYS)) {
 
                 pstmt.setString(1, solicitud.getNombre());
                 pstmt.setString(2, "radicada");
@@ -145,6 +147,27 @@ public class SolicitudRadicacionService {
                 pstmt.setString(11, solicitud.getDescripcionServicio());
 
                 pstmt.executeUpdate();
+
+                ResultSet rs = pstmt.getGeneratedKeys();
+
+                if (rs.next()) {
+
+                    int nuevaEmpresaId = rs.getInt(1);
+
+                    String updateProyecto =
+                            "UPDATE proyectos " +
+                                    "SET empresa_id=?, solicitud_id=NULL " +
+                                    "WHERE solicitud_id=?";
+
+                    try (PreparedStatement pstmtProyecto =
+                                 conn.prepareStatement(updateProyecto)) {
+
+                        pstmtProyecto.setInt(1, nuevaEmpresaId);
+                        pstmtProyecto.setInt(2, solicitudId);
+
+                        pstmtProyecto.executeUpdate();
+                    }
+                }
             }
 
         } catch(SQLException e) {

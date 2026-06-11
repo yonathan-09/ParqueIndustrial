@@ -204,8 +204,10 @@ public class EmpresaDashboardView extends JFrame {
 
     private void registrarProyecto(ActionEvent e) {
         // 1. Crear los componentes de texto para el formulario único
+
         JTextField txtNombre = new JTextField(15);
         JTextField txtDescripcion = new JTextField(15);
+        JTextField txtSuperficieLote = new JTextField(15);
 
         // 2. Armar el panel contenedor para agrupar los campos de forma vertical
         JPanel panelFormulario = new JPanel(new GridLayout(0, 1, 5, 5));
@@ -214,6 +216,11 @@ public class EmpresaDashboardView extends JFrame {
         panelFormulario.add(txtNombre);
         panelFormulario.add(new JLabel("Descripción del proyecto:"));
         panelFormulario.add(txtDescripcion);
+        panelFormulario.add(new JLabel("Superficie requerida del lote:"));
+        panelFormulario.add(txtSuperficieLote);
+
+        double superficieLote =
+                Double.parseDouble(txtSuperficieLote.getText().trim());
 
         // 3. Lanzar el JOptionPane con el panel completo
         int result = JOptionPane.showConfirmDialog(this, panelFormulario,
@@ -226,7 +233,15 @@ public class EmpresaDashboardView extends JFrame {
 
             // Validación para asegurar que no se envíen campos vacíos
             if (!nombre.isEmpty() && !descripcion.isEmpty()) {
-                Proyecto proyecto = new Proyecto(0, nombre, descripcion, "pendiente", empresaId);
+                Proyecto proyecto = new Proyecto(
+                        0,
+                        nombre,
+                        descripcion,
+                        "pendiente",
+                        empresaId,
+                        null,
+                        0
+                );
                 proyectoService.registrar(proyecto);
                 output.append("» [" + java.time.LocalTime.now().toString().substring(0, 5) + "] Proyecto registrado para la empresa ID " + empresaId + "\n");
             } else {

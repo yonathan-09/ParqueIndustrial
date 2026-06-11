@@ -25,6 +25,7 @@ public class ProyectoView extends JFrame {
     private EmpresaService empresaService = new EmpresaService();
     private JList<Proyecto> listaProyectos;
     private DefaultListModel<Proyecto> modeloProyectos = new DefaultListModel<>();
+    private JTextField txtSuperficieLote;
 
     // Constructor principal
     public ProyectoView(int solicitudId, String rolUsuario) {
@@ -104,6 +105,18 @@ public class ProyectoView extends JFrame {
         gbc.gridy = fila++;
         panelContenido.add(txtDesc, gbc);
 
+        JLabel lblSuperficie = new JLabel("Superficie de lote requerida (m²)");
+        lblSuperficie.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        gbc.gridy = fila++;
+        panelContenido.add(lblSuperficie, gbc);
+
+        txtSuperficieLote = new JTextField();
+        txtSuperficieLote.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        gbc.gridy = fila++;
+        panelContenido.add(txtSuperficieLote, gbc);
+
         // Bloque condicional exclusivo para Administradores
         if ("administrador".equalsIgnoreCase(rolUsuario)) {
             // --- Campo: Empresa ID ---
@@ -165,7 +178,7 @@ public class ProyectoView extends JFrame {
         JPanel panelBotones = new JPanel(new GridLayout(1, 2, 20, 0));
         panelBotones.setBackground(Color.WHITE);
 
-        JButton btnRegistrar = new JButton("Registrar Proyecto");
+        JButton btnRegistrar = new JButton("Registrar Solicitud");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 16));
         btnRegistrar.setBackground(verdeFoto);
         btnRegistrar.setForeground(Color.WHITE);
@@ -273,15 +286,53 @@ public class ProyectoView extends JFrame {
 //                    JOptionPane.ERROR_MESSAGE);
 //            return;
 //        }
+        double superficieLote;
 
-        Proyecto proyecto = new Proyecto(
-                0,
-                txtNombre.getText().trim(),
-                txtDesc.getText().trim(),
-                "pendiente",
-                null,
-                solicitudId
-        );
+        try {
+
+            superficieLote =
+                    Double.parseDouble(txtSuperficieLote.getText().trim());
+
+        } catch (NumberFormatException ex) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Ingrese una superficie válida",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            return;
+        }
+        System.out.println("Solicitud ID: " + solicitudId);
+        System.out.println("Empresa ID: " + idEmpresaAsociada);
+
+        Proyecto proyecto;
+
+        if ("empresa".equalsIgnoreCase(rolUsuario)) {
+
+            proyecto = new Proyecto(
+                    0,
+                    txtNombre.getText().trim(),
+                    txtDesc.getText().trim(),
+                    "pendiente",
+                    null,          // empresa_id
+                    solicitudId,   // solicitud_id
+                    superficieLote
+            );
+
+        } else {
+
+            proyecto = new Proyecto(
+                    0,
+                    txtNombre.getText().trim(),
+                    txtDesc.getText().trim(),
+                    "pendiente",
+                    idEmpresaAsociada,
+                    null,
+                    superficieLote
+            );
+        }
 
         service.registrarConArchivos(proyecto, archivosAdjuntos);
 
