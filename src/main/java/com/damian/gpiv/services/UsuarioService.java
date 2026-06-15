@@ -27,7 +27,6 @@ public class UsuarioService {
         }
     }
 
-    // Autenticar usuario
     public Usuario autenticar(String nombre, String password) {
         String sql = "SELECT * FROM usuarios WHERE nombre=? AND password=?";
 
@@ -52,7 +51,7 @@ public class UsuarioService {
             System.err.println("Error al autenticar usuario: " + e.getMessage());
         }
 
-        return null; // si no se encontró usuario
+        return null;
     }
 
 }

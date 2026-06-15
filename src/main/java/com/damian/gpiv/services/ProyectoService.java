@@ -24,7 +24,6 @@ public class ProyectoService {
         this.notifier = new NotificationService();
     }
 
-    // Registrar proyecto sin archivos
     public void registrar(Proyecto proyecto) {
 
 
@@ -57,9 +56,8 @@ public class ProyectoService {
         }
     }
 
-    // Registrar proyecto con archivos PDF
     public void registrarConArchivos(Proyecto proyecto, List<File> archivos) {
-        registrar(proyecto); // inserta el proyecto en la tabla proyectos
+        registrar(proyecto);
 
         String sql = "INSERT INTO proyecto_archivos (proyecto_id, ruta_archivo) VALUES (?, ?)";
         try (Connection conn = Database.getConnection();
@@ -158,9 +156,7 @@ public class ProyectoService {
 
 
 
-    // Listar proyectos
     public List<Proyecto> listar() {
-        System.out.println("=== LISTANDO PROYECTOS ===");
 
         List<Proyecto> proyectos = new ArrayList<>();
         String sql = "SELECT * FROM proyectos";
@@ -172,12 +168,6 @@ public class ProyectoService {
             EmpresaService empresaService = new EmpresaService();
 
             while (rs.next()) {
-
-                System.out.println(
-                        "ID=" + rs.getInt("id")
-                                + " Nombre=" + rs.getString("nombre")
-                                + " Estado=" + rs.getString("estado")
-                );
 
                 Integer empresaId = null;
 
@@ -261,7 +251,6 @@ public class ProyectoService {
                         rs.getDouble("superficie_lote")
                 );
 
-                // Buscar la empresa asociada y setearla en el proyecto
                 Empresa empresa = empresaService.buscarPorId(rs.getInt("empresa_id"));
                 proyecto.setEmpresa(empresa);
 

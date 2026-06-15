@@ -16,34 +16,26 @@ public class LoteView extends JFrame {
     private final EmpresaService empresaService;
     private JTextField txtSuperficie;
     private JTextArea output;
-    private JComboBox<Lote> comboLotesDisponibles;   // Combo para seleccionar lote disponible
-    private JComboBox<Empresa> comboEmpresas;        // Combo para seleccionar empresa
+    private JComboBox<Lote> comboLotesDisponibles;
+    private JComboBox<Empresa> comboEmpresas;
 
     public LoteView() {
-        super("Gestión de Lotes Terresariales - GPIV");
+        super("Gestión de Lotes - GPIV");
         this.loteService = new LoteService();
         this.empresaService = new EmpresaService();
 
-        // Dimensiones estandarizadas para mantener coherencia visual
         setSize(950, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO ACTUALIZADO (Sincronizado con tu foto)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // PANEL IZQUIERDO: Barra lateral decorativa institucional
-        // ---------------------------------------------------------------------
         JPanel panelIzquierdoVerde = new JPanel();
         panelIzquierdoVerde.setBackground(verdeFoto);
         panelIzquierdoVerde.setPreferredSize(new Dimension(150, 650));
         add(panelIzquierdoVerde, BorderLayout.WEST);
 
-        // ---------------------------------------------------------------------
-        // PANEL CENTRAL: Formulario estructurado con GridBagLayout
-        // ---------------------------------------------------------------------
         JPanel panelContenido = new JPanel(new GridBagLayout());
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(25, 40, 25, 40));
@@ -56,23 +48,18 @@ public class LoteView extends JFrame {
 
         int fila = 0;
 
-        // Título de la sección
-        JLabel lblTitulo = new JLabel("Administración de Lotes e Infraestructura");
+        JLabel lblTitulo = new JLabel("Administración de Lotes");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(40, 45, 50));
         gbc.gridy = fila++;
         panelContenido.add(lblTitulo, gbc);
 
-        // Separador superior sutil
         gbc.gridy = fila++;
         gbc.insets = new Insets(0, 0, 15, 0);
         panelContenido.add(new JSeparator(), gbc);
         gbc.insets = new Insets(5, 0, 5, 0); // Reset
 
-        // =====================================================================
-        // BLOQUE 1: REGISTRO DE NUEVO LOTE
-        // =====================================================================
-        JLabel lblSuperficie = new JLabel("Superficie (en metros cuadrados — m²)");
+        JLabel lblSuperficie = new JLabel("Superficie (en m²)");
         lblSuperficie.setFont(new Font("Arial", Font.PLAIN, 16));
         lblSuperficie.setForeground(new Color(80, 80, 80));
         gbc.gridy = fila++;
@@ -90,22 +77,18 @@ public class LoteView extends JFrame {
         btnRegistrar.setForeground(Color.WHITE);
         btnRegistrar.setFocusPainted(false);
         btnRegistrar.setPreferredSize(new Dimension(200, 40));
-        btnRegistrar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
+        btnRegistrar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         btnRegistrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegistrar.addActionListener(this::registrar);
 
         gbc.gridy = fila++;
-        gbc.insets = new Insets(8, 0, 15, 0); // Margen extra inferior antes del siguiente bloque
+        gbc.insets = new Insets(8, 0, 15, 0);
         panelContenido.add(btnRegistrar, gbc);
-        gbc.insets = new Insets(5, 0, 5, 0); // Reset
+        gbc.insets = new Insets(5, 0, 5, 0);
 
-        // Línea divisoria intermedia entre acciones
         gbc.gridy = fila++;
         panelContenido.add(new JSeparator(), gbc);
 
-        // =====================================================================
-        // BLOQUE 2: ASOCIACIÓN/ADJUDICACIÓN DE LOTES
-        // =====================================================================
         JLabel lblLotesDispo = new JLabel("Seleccionar Lote Disponible");
         lblLotesDispo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblLotesDispo.setForeground(new Color(80, 80, 80));
@@ -134,9 +117,6 @@ public class LoteView extends JFrame {
         gbc.gridy = fila++;
         panelContenido.add(comboEmpresas, gbc);
 
-        // ---------------------------------------------------------------------
-        // PANEL DE ACCIONES INFERIORES: Asociar y Listar con Bordes Negros
-        // ---------------------------------------------------------------------
         JPanel panelBotonesAccion = new JPanel(new GridLayout(1, 2, 20, 0));
         panelBotonesAccion.setBackground(Color.WHITE);
 
@@ -146,16 +126,16 @@ public class LoteView extends JFrame {
         btnAsociar.setForeground(Color.WHITE);
         btnAsociar.setFocusPainted(false);
         btnAsociar.setPreferredSize(new Dimension(150, 45));
-        btnAsociar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
+        btnAsociar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         btnAsociar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnAsociar.addActionListener(this::asociar);
 
-        JButton btnListar = new JButton("Listar Todo el Catastro");
+        JButton btnListar = new JButton("Listar Lotes");
         btnListar.setFont(new Font("Arial", Font.BOLD, 15));
         btnListar.setBackground(new Color(240, 243, 247));
         btnListar.setForeground(new Color(40, 50, 60));
         btnListar.setFocusPainted(false);
-        btnListar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Borde negro remarcado
+        btnListar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         btnListar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnListar.addActionListener(this::listar);
 
@@ -166,7 +146,6 @@ public class LoteView extends JFrame {
         gbc.insets = new Insets(15, 0, 15, 0);
         panelContenido.add(panelBotonesAccion, gbc);
 
-        // --- Área de Consola/Salida ---
         output = new JTextArea(10, 50);
         output.setFont(new Font("Monospaced", Font.PLAIN, 14));
         output.setEditable(false);

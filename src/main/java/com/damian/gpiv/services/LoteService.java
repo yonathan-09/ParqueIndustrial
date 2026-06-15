@@ -18,7 +18,6 @@ public class LoteService {
         this.notifier = new NotificationService();
     }
 
-    // Registrar lote (si empresaId es null o 0, se guarda como disponible sin empresa)
     public void registrar(Lote lote) {
         String sql = "INSERT INTO lotes (superficie, estado, empresa_id) VALUES (?, ?, ?)";
 
@@ -28,11 +27,9 @@ public class LoteService {
             pstmt.setInt(1, lote.getSuperficie());
 
             if (lote.getEmpresaId() != 0) {
-                // Asociado a empresa → estado ocupado
                 pstmt.setString(2, "ocupado");
                 pstmt.setInt(3, lote.getEmpresaId());
             } else {
-                // Sin empresa → estado disponible
                 pstmt.setString(2, "disponible");
                 pstmt.setNull(3, java.sql.Types.INTEGER);
             }
@@ -51,7 +48,6 @@ public class LoteService {
     }
 
 
-    // Actualizar estado de lote
     public void actualizarEstado(int loteId, String nuevoEstado) {
         String sql = "UPDATE lotes SET estado=? WHERE id=?";
 
@@ -69,7 +65,6 @@ public class LoteService {
         }
     }
 
-    // Asociar lote a una empresa y cambiar estado a ocupado
     public void asociarEmpresa(int loteId, int empresaId) {
         String sql = "UPDATE lotes SET empresa_id = ?, estado = ? WHERE id = ?";
 
@@ -93,7 +88,6 @@ public class LoteService {
         }
     }
 
-    // Listar lotes
     public List<Lote> listar() {
         List<Lote> lotes = new ArrayList<>();
         String sql = "SELECT * FROM lotes";

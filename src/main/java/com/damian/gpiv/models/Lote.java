@@ -22,7 +22,6 @@ public class Lote {
 
     class NotificationService {
         public void notify(String titulo, String mensaje) {
-            // En una aplicación real podrías usar JOptionPane, logs o un sistema más complejo
             System.out.println("[" + titulo + "] " + mensaje);
         }
     }

@@ -23,7 +23,6 @@ public class LoteMapView extends JFrame {
         this.service = new LoteService();
         this.loteRects = new ArrayList<>();
 
-        // MEDIDAS COMPACTAS Y ESTILIZADAS
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -31,7 +30,6 @@ public class LoteMapView extends JFrame {
 
         Color verdeFoto = new Color(93, 203, 82);
 
-        // 1. BARRA SUPERIOR (Estilo Navbar Fino)
         JPanel navbar = new JPanel(new BorderLayout());
         navbar.setBackground(verdeFoto);
         navbar.setPreferredSize(new Dimension(780, 60));
@@ -42,7 +40,6 @@ public class LoteMapView extends JFrame {
         lblTitulo.setForeground(Color.WHITE);
         navbar.add(lblTitulo, BorderLayout.WEST);
 
-        // En el constructor, después de lblTitulo:
         JButton btnPlanoPDF = new JButton("Abrir Plano PDF");
         btnPlanoPDF.setFocusPainted(false);
         btnPlanoPDF.setBackground(Color.WHITE);
@@ -58,7 +55,6 @@ public class LoteMapView extends JFrame {
 
         add(navbar, BorderLayout.NORTH);
 
-        // 2. LIENZO DE DIBUJO (Canvas interactivo)
         canvas = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -68,7 +64,6 @@ public class LoteMapView extends JFrame {
         };
         canvas.setBackground(Color.WHITE);
 
-        // Listener exacto para las colisiones del clic
         canvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -81,17 +76,14 @@ public class LoteMapView extends JFrame {
             }
         });
 
-        // Contenedor para darle un margen limpio al canvas en los bordes
-        // Definir tamaño preferido del canvas para que active el scroll
-        canvas.setPreferredSize(new Dimension(1000, 800)); // ajusta según cantidad de lotes
 
-// Envolver el canvas en un JScrollPane
+        canvas.setPreferredSize(new Dimension(1000, 800));
+
         JScrollPane scrollPane = new JScrollPane(canvas,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 
-// Contenedor con margen limpio alrededor del scroll
         JPanel panelContenedor = new JPanel(new BorderLayout());
         panelContenedor.setBorder(new EmptyBorder(20, 25, 20, 25));
         panelContenedor.setBackground(Color.WHITE);
@@ -176,7 +168,6 @@ public class LoteMapView extends JFrame {
 
     private void abrirPDF(String resourcePath) {
         try {
-            // Cargar el recurso desde el classpath
             java.net.URL url = getClass().getResource(resourcePath);
             if (url == null) {
                 JOptionPane.showMessageDialog(this,
@@ -185,7 +176,6 @@ public class LoteMapView extends JFrame {
                 return;
             }
 
-            // Copiar el recurso a un archivo temporal
             File tempFile = File.createTempFile("plano", ".pdf");
             tempFile.deleteOnExit();
 
@@ -194,7 +184,6 @@ public class LoteMapView extends JFrame {
                 in.transferTo(out);
             }
 
-            // Abrir con el visor predeterminado
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().open(tempFile);
             } else {

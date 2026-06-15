@@ -20,22 +20,14 @@ public class RegistroUsuarioView extends JFrame {
         super("Registrar Nuevo Usuario - GPIV");
         this.service = new UsuarioService();
 
-        // Usamos BorderLayout para controlar los anchos de las columnas de forma precisa
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO ACTUALIZADO (Sincronizado con el Login y la foto)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // PANEL IZQUIERDO: Barra lateral angosta con el nuevo verde
-        // ---------------------------------------------------------------------
         JPanel panelIzquierdoVerde = new JPanel();
-        panelIzquierdoVerde.setBackground(verdeFoto); // Cambiado al verde de la foto
+        panelIzquierdoVerde.setBackground(verdeFoto);
         panelIzquierdoVerde.setPreferredSize(new Dimension(150, 500));
 
-        // ---------------------------------------------------------------------
-        // PANEL DERECHO: El bloque principal ("Acá va todo") con fuentes grandes
-        // ---------------------------------------------------------------------
         JPanel panelDerechoFormulario = new JPanel(new GridBagLayout());
         panelDerechoFormulario.setBackground(Color.WHITE);
         panelDerechoFormulario.setBorder(new EmptyBorder(20, 50, 20, 50));
@@ -45,20 +37,17 @@ public class RegistroUsuarioView extends JFrame {
         gbc.insets = new Insets(8, 0, 4, 0);
         gbc.gridx = 0;
 
-        // Encabezado
         JLabel lblHeader = new JLabel("Crear Cuenta");
         lblHeader.setFont(new Font("Arial", Font.BOLD, 26));
         lblHeader.setForeground(new Color(50, 50, 50));
         gbc.gridy = 0;
         panelDerechoFormulario.add(lblHeader, gbc);
 
-        // Separador sutil
         gbc.gridy = 1;
         gbc.insets = new Insets(0, 0, 15, 0);
         panelDerechoFormulario.add(new JSeparator(), gbc);
         gbc.insets = new Insets(8, 0, 4, 0);
 
-        // --- Campo: Nombre de usuario ---
         JLabel lblNombre = new JLabel("Nombre de usuario");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 18));
         lblNombre.setForeground(new Color(80, 80, 80));
@@ -71,7 +60,6 @@ public class RegistroUsuarioView extends JFrame {
         gbc.gridy = 3;
         panelDerechoFormulario.add(txtNombre, gbc);
 
-        // --- Campo: Rol ---
         JLabel lblRol = new JLabel("Rol");
         lblRol.setFont(new Font("Arial", Font.PLAIN, 18));
         lblRol.setForeground(new Color(80, 80, 80));
@@ -85,7 +73,6 @@ public class RegistroUsuarioView extends JFrame {
         gbc.gridy = 5;
         panelDerechoFormulario.add(comboRol, gbc);
 
-        // --- Campo: Contraseña ---
         JLabel lblPassword = new JLabel("Contraseña");
         lblPassword.setFont(new Font("Arial", Font.PLAIN, 18));
         lblPassword.setForeground(new Color(80, 80, 80));
@@ -98,10 +85,9 @@ public class RegistroUsuarioView extends JFrame {
         gbc.gridy = 7;
         panelDerechoFormulario.add(txtPassword, gbc);
 
-        // --- Botón: Registrar Usuario (Estilo adaptado al verde) ---
         JButton btnRegistrar = new JButton("Registrar Usuario");
         btnRegistrar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnRegistrar.setBackground(verdeFoto); // Cambiado al verde de la foto
+        btnRegistrar.setBackground(verdeFoto);
         btnRegistrar.setForeground(Color.WHITE);
         btnRegistrar.setFocusPainted(false);
         btnRegistrar.setPreferredSize(new Dimension(300, 42));
@@ -110,7 +96,6 @@ public class RegistroUsuarioView extends JFrame {
         gbc.insets = new Insets(20, 0, 5, 0);
         panelDerechoFormulario.add(btnRegistrar, gbc);
 
-        // --- Botón: Cancelar ---
         JButton btnVolver = new JButton("Cancelar");
         btnVolver.setFont(new Font("Arial", Font.PLAIN, 14));
         btnVolver.setContentAreaFilled(false);
@@ -125,13 +110,9 @@ public class RegistroUsuarioView extends JFrame {
         gbc.insets = new Insets(5, 0, 0, 0);
         panelDerechoFormulario.add(btnVolver, gbc);
 
-        // ---------------------------------------------------------------------
-        // ACOPLAMIENTO DE LOS PANELES EN SUS RESPECTIVAS POSICIONES
-        // ---------------------------------------------------------------------
-        add(panelIzquierdoVerde, BorderLayout.WEST); // Franja lateral angosta
-        add(panelDerechoFormulario, BorderLayout.CENTER); // El resto blanco dominante
+        add(panelIzquierdoVerde, BorderLayout.WEST);
+        add(panelDerechoFormulario, BorderLayout.CENTER);
 
-        // Configuración de la pantalla
         setSize(750, 520);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

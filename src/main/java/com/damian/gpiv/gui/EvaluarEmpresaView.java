@@ -20,18 +20,13 @@ public class EvaluarEmpresaView extends JFrame {
         super("Evaluar Empresas Interesadas");
         this.service = new SolicitudRadicacionService();
 
-        // Dimensiones optimizadas para la interfaz web con letra grande
         setSize(950, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // 1. BARRA SUPERIOR (Estilo Navbar Web)
-        // ---------------------------------------------------------------------
         JPanel navbar = new JPanel(new BorderLayout());
         navbar.setBackground(verdeFoto);
         navbar.setPreferredSize(new Dimension(850, 75));
@@ -44,9 +39,6 @@ public class EvaluarEmpresaView extends JFrame {
 
         add(navbar, BorderLayout.NORTH);
 
-        // ---------------------------------------------------------------------
-        // 2. PANEL CENTRAL (Contenido Visual)
-        // ---------------------------------------------------------------------
         JPanel panelContenido = new JPanel(new GridBagLayout());
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(25, 35, 25, 35));
@@ -59,7 +51,6 @@ public class EvaluarEmpresaView extends JFrame {
 
         int fila = 0;
 
-        // Fila de Entrada para el ID
         JPanel panelInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         panelInput.setOpaque(false);
 
@@ -76,7 +67,6 @@ public class EvaluarEmpresaView extends JFrame {
         gbc.gridy = fila++;
         panelContenido.add(panelInput, gbc);
 
-        // Fila de Botones (Redondeados y medianos con contorno negro)
         JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         panelAcciones.setOpaque(false);
 
@@ -106,7 +96,6 @@ public class EvaluarEmpresaView extends JFrame {
         panelContenido.add(panelAcciones, gbc);
         gbc.insets = new Insets(6, 0, 6, 0); // Reset
 
-        // Área de salida de texto
         output = new JTextArea(10, 50);
         output.setFont(new Font("Monospaced", Font.PLAIN, 15));
         output.setEditable(false);
@@ -223,9 +212,6 @@ public class EvaluarEmpresaView extends JFrame {
         }
     }
 
-    /**
-     * Componente custom para botones con puntas redondeadas y borde negro remarcado.
-     */
     private static class BotonRedondeado extends JButton {
         private final int radioArco = 18;
 

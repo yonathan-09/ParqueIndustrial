@@ -1,13 +1,11 @@
 package com.damian.gpiv.gui;
 
-import com.damian.gpiv.models.Empresa;
 import com.damian.gpiv.services.EmpresaService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.List;
 
 public class EmpresaView extends JFrame {
     private final EmpresaService service;
@@ -16,7 +14,6 @@ public class EmpresaView extends JFrame {
     private JTextField txtEmail;
     private JTextField txtCuit;
     private JTextField txtActividadPrincipal;
-    private JTextField txtActividadSecundaria;
     private JTextField txtDireccion;
     private JTextField txtReferente;
     private JTextField txtTelefono;
@@ -28,7 +25,6 @@ public class EmpresaView extends JFrame {
         super("Gestión de Empresas - GPIV");
         this.service = new EmpresaService();
 
-        // Base de la ventana moderna
         setSize(950, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -36,13 +32,11 @@ public class EmpresaView extends JFrame {
 
         Color verdeFoto = new Color(93, 203, 82);
 
-        // PANEL IZQUIERDO: Barra lateral decorativa
         JPanel panelIzquierdoVerde = new JPanel();
         panelIzquierdoVerde.setBackground(verdeFoto);
         panelIzquierdoVerde.setPreferredSize(new Dimension(150, 650));
         add(panelIzquierdoVerde, BorderLayout.WEST);
 
-        // PANEL CENTRAL/DERECHO: Formulario
         JPanel panelTitulo = new JPanel();
         panelTitulo.setLayout(new BorderLayout());
         panelTitulo.setBackground(Color.WHITE);
@@ -53,13 +47,11 @@ public class EmpresaView extends JFrame {
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(30, 40, 30, 40));
 
-        // Título de la sección
         JLabel lblTitulo = new JLabel("Administración de Empresas", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(40, 45, 50));
         panelTitulo.add(lblTitulo);
 
-        // --- Campo: Nombre ---
         JLabel lblNombre = new JLabel("Nombre de la Empresa");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         lblNombre.setForeground(new Color(80, 80, 80));
@@ -70,7 +62,6 @@ public class EmpresaView extends JFrame {
         txtNombre.setPreferredSize(new Dimension(300, 35));
         panelContenido.add(txtNombre);
 
-        // --- Campo: Tipo ---
         JLabel lblTipo = new JLabel("Tipo de Estado");
         lblTipo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblTipo.setForeground(new Color(80, 80, 80));
@@ -79,7 +70,6 @@ public class EmpresaView extends JFrame {
         comboTipo = new JComboBox<>(new String[]{"interesada", "radicada"});
         panelContenido.add(comboTipo);
 
-        // --- Campo: Email ---
         JLabel lblEmail = new JLabel("Correo Electrónico de Contacto");
         lblEmail.setFont(new Font("Arial", Font.PLAIN, 16));
         lblEmail.setForeground(new Color(80, 80, 80));
@@ -100,7 +90,6 @@ public class EmpresaView extends JFrame {
         txtCuit.setPreferredSize(new Dimension(300, 35));
         panelContenido.add(txtCuit);
 
-// --- Campo: Actividad Principal ---
         JLabel lblActPrin = new JLabel("Actividad Principal");
         lblActPrin.setFont(new Font("Arial", Font.PLAIN, 16));
         lblActPrin.setForeground(new Color(80, 80, 80));
@@ -109,7 +98,6 @@ public class EmpresaView extends JFrame {
         txtActividadPrincipal = new JTextField();
         panelContenido.add(txtActividadPrincipal);
 
-// --- Campo: Dirección ---
         JLabel lblDireccion = new JLabel("Dirección");
         lblDireccion.setFont(new Font("Arial", Font.PLAIN, 16));
         lblDireccion.setForeground(new Color(80, 80, 80));
@@ -118,7 +106,6 @@ public class EmpresaView extends JFrame {
         txtDireccion = new JTextField();
         panelContenido.add(txtDireccion);
 
-// --- Campo: Persona Referente ---
         JLabel lblReferente = new JLabel("Persona Referente");
         lblReferente.setFont(new Font("Arial", Font.PLAIN, 16));
         lblReferente.setForeground(new Color(80, 80, 80));
@@ -127,7 +114,6 @@ public class EmpresaView extends JFrame {
         txtReferente = new JTextField();
         panelContenido.add(txtReferente);
 
-// --- Campo: Teléfono ---
         JLabel lblTelefono = new JLabel("Teléfono");
         lblTelefono.setFont(new Font("Arial", Font.PLAIN, 16));
         lblTelefono.setForeground(new Color(80, 80, 80));
@@ -136,7 +122,6 @@ public class EmpresaView extends JFrame {
         txtTelefono = new JTextField();
         panelContenido.add(txtTelefono);
 
-// --- Campo: Rubro ---
         JLabel lblRubro = new JLabel("Rubro");
         lblRubro.setFont(new Font("Arial", Font.PLAIN, 16));
         lblRubro.setForeground(new Color(80, 80, 80));
@@ -145,7 +130,6 @@ public class EmpresaView extends JFrame {
         comboRubro = new JComboBox<>(new String[]{"Servicios", "Bienes", "Bienes y Servicios"});
         panelContenido.add(comboRubro);
 
-// --- Campo: Descripción del servicio/bien ---
         JLabel lblDescServ = new JLabel("Descripción del Servicio/Bien");
         lblDescServ.setFont(new Font("Arial", Font.PLAIN, 16));
         lblDescServ.setForeground(new Color(80, 80, 80));
@@ -155,9 +139,6 @@ public class EmpresaView extends JFrame {
         panelContenido.add(txtDescripcionServicio);
 
 
-        // ---------------------------------------------------------------------
-        // PANEL DE ACCIONES: Botones en paralelo con Bordes Negros Remarcados
-        // ---------------------------------------------------------------------
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(Color.WHITE);
 
@@ -167,7 +148,6 @@ public class EmpresaView extends JFrame {
         btnRegistrar.setForeground(Color.BLACK);
         btnRegistrar.setFocusPainted(false);
         btnRegistrar.setPreferredSize(new Dimension(150, 45));
-        // BORDE NEGRO REMARCADO SOLICITADO
         btnRegistrar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         btnRegistrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnRegistrar.addActionListener(this::registrar);

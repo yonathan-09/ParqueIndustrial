@@ -13,7 +13,6 @@ import java.sql.Statement;
 
 public class EmpresaService {
 
-    // Registrar empresa con todos los campos
     public void registrar(Empresa empresa) {
         String sql = "INSERT INTO empresas " +
                 "(nombre, tipo, email, estado, cuit, actividad_principal, direccion, referente, telefono, rubro, descripcion_servicio) " +
@@ -26,7 +25,6 @@ public class EmpresaService {
             pstmt.setString(2, empresa.getTipo());
             pstmt.setString(3, empresa.getEmail());
 
-            // Estado depende del tipo
             if ("radicada".equalsIgnoreCase(empresa.getTipo())) {
                 pstmt.setString(4, "aprobada");
             } else {
@@ -219,7 +217,6 @@ public class EmpresaService {
         return false;
     }
 
-    // Buscar empresa por ID
     public Empresa buscarPorId(int empresaId) {
         String sql = "SELECT * FROM empresas WHERE id = ?";
         try (Connection conn = Database.getConnection();
@@ -238,11 +235,10 @@ public class EmpresaService {
         } catch (SQLException e) {
             System.err.println("Error al buscar empresa: " + e.getMessage());
         }
-        return null; // Si no se encuentra
+        return null;
     }
 
 
-    // Listar empresas con todos los campos
     public List<Empresa> listar() {
         List<Empresa> empresas = new ArrayList<>();
         String sql = "SELECT * FROM empresas";
@@ -276,15 +272,12 @@ public class EmpresaService {
         return empresas;
     }
 
-    // Actualizar estado de empresa (solo interesadas)
     public void actualizarEstado(int empresaId, String nuevoEstado) {
         String sql;
 
         if ("aprobada".equalsIgnoreCase(nuevoEstado)) {
-            // Si se aprueba → cambiar estado y tipo
             sql = "UPDATE empresas SET estado=?, tipo='radicada' WHERE id=? AND tipo='interesada'";
         } else {
-            // Si se rechaza → solo cambiar estado
             sql = "UPDATE empresas SET estado=? WHERE id=? AND tipo='interesada'";
         }
 

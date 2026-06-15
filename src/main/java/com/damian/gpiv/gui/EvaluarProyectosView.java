@@ -19,18 +19,13 @@ public class EvaluarProyectosView extends JFrame {
         super("Evaluación de Proyectos - GPIV");
         this.service = new ProyectoService();
 
-        // Tamaño mediano y optimizado para una lectura cómoda
         setSize(1000, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO ACTUALIZADO (Sincronizado con la foto)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // 1. BARRA SUPERIOR (Estilo Web con la Franja Verde)
-        // ---------------------------------------------------------------------
         JPanel navbar = new JPanel(new BorderLayout());
         navbar.setBackground(verdeFoto);
         navbar.setPreferredSize(new Dimension(850, 75));
@@ -43,9 +38,6 @@ public class EvaluarProyectosView extends JFrame {
 
         add(navbar, BorderLayout.NORTH);
 
-        // ---------------------------------------------------------------------
-        // 2. PANEL CENTRAL (Contenido con Letras Grandes y GridBagLayout)
-        // ---------------------------------------------------------------------
         JPanel panelContenido = new JPanel(new GridBagLayout());
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(25, 35, 25, 35));
@@ -58,7 +50,6 @@ public class EvaluarProyectosView extends JFrame {
 
         int fila = 0;
 
-        // --- Fila 1: Entrada del ID de Proyecto ---
         JPanel panelInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
         panelInput.setOpaque(false);
 
@@ -75,7 +66,6 @@ public class EvaluarProyectosView extends JFrame {
         gbc.gridy = fila++;
         panelContenido.add(panelInput, gbc);
 
-        // --- Fila 2: Botones de Acción (Redondeados con Borde Negro) ---
         JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         panelAcciones.setOpaque(false);
 
@@ -114,7 +104,6 @@ public class EvaluarProyectosView extends JFrame {
         panelContenido.add(panelAcciones, gbc);
         gbc.insets = new Insets(6, 0, 6, 0); // Reset
 
-        // --- Fila 3: Consola de Salida Estilizada ---
         output = new JTextArea(10, 50);
         output.setFont(new Font("Monospaced", Font.PLAIN, 15)); // Letra grande para el log
         output.setEditable(false);
@@ -131,22 +120,19 @@ public class EvaluarProyectosView extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Aplica las fuentes grandes de 16px y el tamaño mediano estandarizado a los botones.
-     */
     private void configurarBoton(JButton boton, Color colorFondo) {
-        boton.setFont(new Font("Arial", Font.BOLD, 16)); // Letra grande e impactante
+        boton.setFont(new Font("Arial", Font.BOLD, 16));
         boton.setBackground(colorFondo);
         if (boton.getForeground() == Color.BLACK || boton.getForeground() == new Color(51,51,51)) {
             boton.setForeground(Color.WHITE);
         } else if (colorFondo.getRed() > 230 && colorFondo.getGreen() > 230) {
-            boton.setForeground(Color.BLACK); // Mantener texto oscuro en fondos muy claros si fuese necesario
+            boton.setForeground(Color.BLACK);
         } else {
             boton.setForeground(Color.WHITE);
         }
         boton.setFocusPainted(false);
         boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setPreferredSize(new Dimension(190, 48)); // Botones medianos estilizados
+        boton.setPreferredSize(new Dimension(190, 48));
     }
 
     private void verDetalleProyecto() {
@@ -197,7 +183,7 @@ public class EvaluarProyectosView extends JFrame {
             output.append("» [" + java.time.LocalTime.now().toString().substring(0, 5) + "] ESTADO ACTUALIZADO: Proyecto ID "
                     + proyectoId + " cambiado a -> " + nuevoEstado.toUpperCase() + "\n");
 
-            txtProyectoId.setText(""); // Limpiar campo tras la acción exitosa
+            txtProyectoId.setText("");
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this,
                     "El ID de proyecto debe ser un valor numérico entero.",
@@ -222,11 +208,8 @@ public class EvaluarProyectosView extends JFrame {
         }
     }
 
-    /**
-     * Componente personalizado de botón con puntas redondeadas medianas y borde negro grueso de 2px.
-     */
     private static class BotonRedondeado extends JButton {
-        private final int radioArco = 18; // Puntas redondeadas medianas
+        private final int radioArco = 18;
 
         public BotonRedondeado(String texto) {
             super(texto);
@@ -239,11 +222,9 @@ public class EvaluarProyectosView extends JFrame {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Pintar fondo del botón
             g2.setColor(getBackground());
             g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), radioArco, radioArco));
 
-            // Pintar contorno de 2px negro remarcado
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(2f));
             g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, radioArco, radioArco));

@@ -18,39 +18,30 @@ public class LoginView extends JFrame {
         super("Login GPIV");
         this.service = new UsuarioService();
 
-        // Ventana principal dividida a la mitad (Izquierda Verde, Derecha Blanca)
         setLayout(new GridLayout(1, 2));
 
-        // COLOR VERDE CORPORATIVO ACTUALIZADO (RGB de la foto)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // PANEL IZQUIERDO: Título y Contactos Grandes con Subrayado (Sin Descripción ni Logo)
-        // ---------------------------------------------------------------------
         JPanel panelIzquierdo = new JPanel(new GridBagLayout());
         panelIzquierdo.setBackground(verdeFoto);
-        panelIzquierdo.setBorder(new EmptyBorder(40, 40, 40, 40)); // Ajuste leve de margen para que entre todo cómodo
+        panelIzquierdo.setBorder(new EmptyBorder(40, 40, 40, 40));
 
         GridBagConstraints gbcIzquierdo = new GridBagConstraints();
         gbcIzquierdo.fill = GridBagConstraints.HORIZONTAL;
         gbcIzquierdo.gridx = 0;
         gbcIzquierdo.weightx = 1.0;
 
-        // 1. Título del Parque (Grande - 45px) con contorno negro limpio y perfecto
         JLabel lblTitulo = new JLabel("<html><center>PARQUE<br>INDUSTRIAL<br>VIEDMA</center></html>") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Capa 1: Forzamos el texto a renderizarse en negro como fondo de sombra
                 setForeground(Color.BLACK);
 
-                // Desplazamos levemente la matriz de dibujo en diagonal para hacer el relieve
                 g2.translate(2, 2);
                 super.paintComponent(g2);
 
-                // Capa 2: Volvemos a la posición original y estampamos el frente blanco puro
                 g2.translate(-2, -2);
                 setForeground(Color.WHITE);
                 super.paintComponent(g2);
@@ -69,14 +60,12 @@ public class LoginView extends JFrame {
         gbcIzquierdo.insets = new Insets(0, 0, 30, 0);
         panelIzquierdo.add(lblTitulo, gbcIzquierdo);
 
-        // Separador intermedio decorativo antes de los contactos
         JSeparator sepMedio = new JSeparator();
         sepMedio.setForeground(Color.BLACK);
         gbcIzquierdo.gridy = 1;
         gbcIzquierdo.insets = new Insets(0, 10, 20, 10);
         panelIzquierdo.add(sepMedio, gbcIzquierdo);
 
-        // Subtítulo de Sección: Administración (Grande - 24px)
         JLabel lblTituloContacto = new JLabel("Administración ENREPAVI");
         lblTituloContacto.setFont(new Font("Arial", Font.BOLD, 24));
         lblTituloContacto.setForeground(Color.BLACK);
@@ -85,7 +74,6 @@ public class LoginView extends JFrame {
         gbcIzquierdo.insets = new Insets(0, 0, 15, 0);
         panelIzquierdo.add(lblTituloContacto, gbcIzquierdo);
 
-        // 2. Datos de Contacto Grandes con líneas de subrayado individuales abajo
         String[] datosContacto = {
                 "-Dirección: Ruta Provincial N.° 1 Km 6.5, Viedma",
                 "-Teléfono: +54 9 2920 213078",
@@ -110,16 +98,14 @@ public class LoginView extends JFrame {
             panelIzquierdo.add(sublinea, gbcIzquierdo);
         }
 
-        // 3. NUEVA SECCIÓN: Título Ubicación (Igual al de Administración)
         JLabel lblTituloUbicacion = new JLabel("Ubicación");
         lblTituloUbicacion.setFont(new Font("Arial", Font.BOLD, 24));
         lblTituloUbicacion.setForeground(Color.BLACK);
         lblTituloUbicacion.setHorizontalAlignment(SwingConstants.CENTER);
         gbcIzquierdo.gridy = filaActual++;
-        gbcIzquierdo.insets = new Insets(15, 0, 15, 0); // Espaciado superior para separar del bloque anterior
+        gbcIzquierdo.insets = new Insets(15, 0, 15, 0);
         panelIzquierdo.add(lblTituloUbicacion, gbcIzquierdo);
 
-        // Botón de Google Maps estilizado (Fondo blanco, borde negro de 2px)
         JButton btnMaps = new JButton(" Ver en Google Maps");
         btnMaps.setFont(new Font("Arial", Font.BOLD, 15));
         btnMaps.setBackground(Color.WHITE);
@@ -128,11 +114,9 @@ public class LoginView extends JFrame {
         btnMaps.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnMaps.setPreferredSize(new Dimension(200, 40));
 
-        // Bordes de 2px negros sólidos a medida para este botón
         btnMaps.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         btnMaps.addActionListener(e -> abrirGoogleMaps());
 
-        // Contenedor flojo para centrar horizontalmente el botón sin estirarlo
         JPanel panelContenedorMaps = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelContenedorMaps.setOpaque(false);
         panelContenedorMaps.add(btnMaps);
@@ -142,9 +126,6 @@ public class LoginView extends JFrame {
         panelIzquierdo.add(panelContenedorMaps, gbcIzquierdo);
 
 
-        // ---------------------------------------------------------------------
-        // PANEL DERECHO: Formulario Blanco bien espaciado
-        // ---------------------------------------------------------------------
         JPanel panelDerecho = new JPanel(new GridBagLayout());
         panelDerecho.setBackground(Color.WHITE);
         panelDerecho.setBorder(new EmptyBorder(40, 50, 40, 50));
@@ -154,20 +135,17 @@ public class LoginView extends JFrame {
         gbc.insets = new java.awt.Insets(10, 0, 10, 0);
         gbc.gridx = 0;
 
-        // Título del formulario
         JLabel lblLogin = new JLabel("Iniciar Sesión");
         lblLogin.setFont(new Font("Arial", Font.BOLD, 30));
         lblLogin.setForeground(new Color(50, 50, 50));
         gbc.gridy = 0;
         panelDerecho.add(lblLogin, gbc);
 
-        // Separador sutil debajo del título
         gbc.gridy = 1;
         gbc.insets = new java.awt.Insets(0, 0, 25, 0);
         panelDerecho.add(new JSeparator(), gbc);
         gbc.insets = new java.awt.Insets(10, 0, 10, 0);
 
-        // Campo Usuario
         JLabel lblUsuario = new JLabel("Usuario");
         lblUsuario.setFont(new Font("Arial", Font.PLAIN, 18));
         lblUsuario.setForeground(new Color(100, 100, 100));
@@ -180,7 +158,6 @@ public class LoginView extends JFrame {
         gbc.gridy = 3;
         panelDerecho.add(txtUsuario, gbc);
 
-        // Campo Contraseña
         JLabel lblPassword = new JLabel("Contraseña");
         lblPassword.setFont(new Font("Arial", Font.PLAIN, 18));
         lblPassword.setForeground(new Color(100, 100, 100));
@@ -193,7 +170,6 @@ public class LoginView extends JFrame {
         gbc.gridy = 5;
         panelDerecho.add(txtPassword, gbc);
 
-        // Botón Ingresar (Estilo Principal unificado al verde)
         JButton btnIngresar = new JButton("Ingresar");
         btnIngresar.setBackground(verdeFoto);
         btnIngresar.setForeground(Color.WHITE);
@@ -205,7 +181,6 @@ public class LoginView extends JFrame {
         gbc.insets = new java.awt.Insets(30, 0, 15, 0);
         panelDerecho.add(btnIngresar, gbc);
 
-        // Panel secundario para boton de abajo (Registrar)
         JPanel panelBotonesSecundarios = new JPanel(new GridLayout(1, 2, 15, 0));
         panelBotonesSecundarios.setBackground(Color.WHITE);
 
@@ -223,11 +198,9 @@ public class LoginView extends JFrame {
         gbc.insets = new java.awt.Insets(10, 0, 0, 0);
         panelDerecho.add(panelBotonesSecundarios, gbc);
 
-        // Agregar los dos paneles principales al JFrame
         add(panelIzquierdo);
         add(panelDerecho);
 
-        // Ajustes finales de la ventana
         setSize(950, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -275,7 +248,6 @@ public class LoginView extends JFrame {
         }
     }
 
-    // Método nuevo para procesar el link de Google Maps
     private void abrirGoogleMaps() {
         try {
             Desktop.getDesktop().browse(new URI(

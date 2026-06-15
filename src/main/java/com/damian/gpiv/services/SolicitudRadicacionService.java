@@ -84,10 +84,6 @@ public class SolicitudRadicacionService {
         return lista;
     }
 
-    // =====================================================
-    // APROBAR SOLICITUD
-    // =====================================================
-
     public void aprobarSolicitud(int solicitudId) {
 
         SolicitudRadicacion solicitud = buscarPorId(solicitudId);
@@ -99,7 +95,6 @@ public class SolicitudRadicacionService {
 
         try(Connection conn = Database.getConnection()) {
 
-            // 1) Marcar solicitud aprobada
             String updateSolicitud =
                     "UPDATE solicitudes_radicacion SET estado='aprobada' WHERE id=?";
 
@@ -110,7 +105,6 @@ public class SolicitudRadicacionService {
                 pstmt.executeUpdate();
             }
 
-            // 2) Crear empresa radicada
             String insertEmpresa = """
             INSERT INTO empresas
             (
@@ -175,10 +169,6 @@ public class SolicitudRadicacionService {
         }
     }
 
-    // =====================================================
-    // RECHAZAR SOLICITUD
-    // =====================================================
-
     public void rechazarSolicitud(int solicitudId) {
 
         String sql =
@@ -229,6 +219,4 @@ public class SolicitudRadicacionService {
 
         return null;
     }
-
-
 }

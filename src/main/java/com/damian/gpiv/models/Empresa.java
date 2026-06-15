@@ -7,8 +7,6 @@ public class Empresa {
     private String tipo;
     private String email;
     private String estado;
-
-    // Nuevos campos
     private String cuit;
     private String actividadPrincipal;
     private String direccion;
@@ -43,8 +41,6 @@ public class Empresa {
         this.estado = estado;
     }
 
-
-    // Getters
     public String getNombre() { return nombre; }
     public int getId() { return id; }
     public String getTipo() { return tipo; }
@@ -58,7 +54,6 @@ public class Empresa {
     public String getRubro() { return rubro; }
     public String getDescripcionServicio() { return descripcionServicio; }
 
-    // Setters
     public void setEstado(String estado) { this.estado = estado; }
     public void setCuit(String cuit) { this.cuit = cuit; }
     public void setActividadPrincipal(String actividadPrincipal) { this.actividadPrincipal = actividadPrincipal; }
@@ -68,23 +63,6 @@ public class Empresa {
     public void setRubro(String rubro) { this.rubro = rubro; }
     public void setDescripcionServicio(String descripcionServicio) { this.descripcionServicio = descripcionServicio; }
 
-//    @Override
-//    public String toString() {
-//        return "Empresa{" +
-//                "id=" + id +
-//                ", nombre='" + nombre + '\'' +
-//                ", tipo='" + tipo + '\'' +
-//                ", email='" + email + '\'' +
-//                ", estado='" + estado + '\'' +
-//                ", cuit='" + cuit + '\'' +
-//                ", actividadPrincipal='" + actividadPrincipal + '\'' +
-//                ", direccion='" + direccion + '\'' +
-//                ", referente='" + referente + '\'' +
-//                ", telefono='" + telefono + '\'' +
-//                ", rubro='" + rubro + '\'' +
-//                ", descripcionServicio='" + descripcionServicio + '\'' +
-//                '}';
-//    }
 
     @Override
     public String toString() {

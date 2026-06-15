@@ -26,7 +26,6 @@ public class ReporteService {
 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            // Empresas aprobadas (radicadas)
             try (PreparedStatement pstmt = conn.prepareStatement(sqlEmpresas);
                  ResultSet rs = pstmt.executeQuery()) {
 
@@ -39,7 +38,6 @@ public class ReporteService {
                 }
             }
 
-            // Empresas interesadas (solicitudes pendientes)
             try (PreparedStatement pstmt = conn.prepareStatement(sqlSolicitudes);
                  ResultSet rs = pstmt.executeQuery()) {
 
@@ -71,7 +69,6 @@ public class ReporteService {
         }
     }
 
-    // Reporte de lotes por estado (gráfico de torta)
     public void generarReporteLotes() {
         String sql = "SELECT estado, COUNT(*) FROM lotes GROUP BY estado";
 
@@ -102,7 +99,6 @@ public class ReporteService {
         }
     }
 
-    // Reporte de proyectos por estado (gráfico de barras)
     public void generarReporteProyectos() {
         String sql = "SELECT estado, COUNT(*) FROM proyectos GROUP BY estado";
 

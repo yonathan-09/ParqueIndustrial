@@ -18,23 +18,20 @@ public class PlanoLotes extends JFrame {
 
     public PlanoLotes(String resourcePath) {
         super("Plano del Parque Industrial");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // maximiza la ventana
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         try {
-            // Cargar el PDF desde resources
             InputStream in = getClass().getResourceAsStream(resourcePath);
             PDDocument document = PDDocument.load(in);
             PDFRenderer renderer = new PDFRenderer(document);
 
-            // Renderizar la primera página como imagen
-            BufferedImage image = renderer.renderImageWithDPI(0, 120); // DPI ajustable
+            BufferedImage image = renderer.renderImageWithDPI(0, 120);
             JLabel label = new JLabel(new ImageIcon(image));
 
             JScrollPane scrollPane = new JScrollPane(label);
             add(scrollPane, BorderLayout.CENTER);
 
-            // Listener para arrastrar con el mouse
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {

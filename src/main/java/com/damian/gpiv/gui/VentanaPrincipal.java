@@ -13,36 +13,29 @@ public class VentanaPrincipal extends JFrame {
         super("GPIV - Gestión del Parque Industrial de Viedma");
         this.rol = rol;
 
-        // Base de la ventana principal
         setSize(1100, 750);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO ACTUALIZADO (Sincronizado con el de la foto)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // 1. BARRA SUPERIOR (Estilo Navbar de Página Web)
-        // ---------------------------------------------------------------------
         JPanel navbar = new JPanel(new BorderLayout());
-        navbar.setBackground(verdeFoto); // Cambiado al verde brillante
+        navbar.setBackground(verdeFoto);
         navbar.setPreferredSize(new Dimension(1100, 70));
         navbar.setBorder(new EmptyBorder(0, 40, 0, 40));
 
-        // Título/Logo de la Web a la izquierda
         JLabel lblLogo = new JLabel("GPIV   |   PARQUE INDUSTRIAL");
         lblLogo.setFont(new Font("Arial", Font.BOLD, 20));
         lblLogo.setForeground(Color.WHITE);
         navbar.add(lblLogo, BorderLayout.WEST);
 
-        // Perfil y Salida a la derecha
         JPanel panelPerfil = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 20));
         panelPerfil.setOpaque(false);
 
         JLabel lblSesion = new JLabel("Rol: " + rol.toUpperCase());
         lblSesion.setFont(new Font("Arial", Font.BOLD, 14));
-        lblSesion.setForeground(Color.WHITE); // Cambiado a blanco para mejor contraste sobre el verde claro
+        lblSesion.setForeground(Color.WHITE);
         panelPerfil.add(lblSesion);
 
         JButton btnLogout = new JButton("Cerrar Sesión");
@@ -58,21 +51,17 @@ public class VentanaPrincipal extends JFrame {
         panelPerfil.add(btnLogout);
         navbar.add(panelPerfil, BorderLayout.EAST);
 
-        // ---------------------------------------------------------------------
-        // 2. PANEL CENTRAL (Cuerpo de la Página Web)
-        // ---------------------------------------------------------------------
         JPanel cuerpoWeb = new JPanel(new GridBagLayout());
-        cuerpoWeb.setBackground(Color.WHITE); // Fondo blanco limpio de web
+        cuerpoWeb.setBackground(Color.WHITE);
         cuerpoWeb.setBorder(new EmptyBorder(40, 60, 40, 60));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(12, 0, 12, 0); // Espaciado entre los rectángulos
+        gbc.insets = new Insets(12, 0, 12, 0);
         gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST; // Clava absolutamente todo a la izquierda
+        gbc.anchor = GridBagConstraints.WEST;
 
-        // Título de bienvenida de la página
         JLabel lblBienvenida = new JLabel("Panel de Gestión Operativa");
         lblBienvenida.setFont(new Font("Arial", Font.BOLD, 28));
         lblBienvenida.setForeground(new Color(40, 45, 50));
@@ -82,13 +71,11 @@ public class VentanaPrincipal extends JFrame {
         JLabel lblSubtitulo = new JLabel("Seleccione una de las siguientes opciones operativas disponibles para su perfil:");
         lblSubtitulo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblSubtitulo.setForeground(Color.GRAY);
-        gbc.insets = new Insets(0, 0, 30, 0); // Espacio grande antes de los botones
+        gbc.insets = new Insets(0, 0, 30, 0);
         cuerpoWeb.add(lblSubtitulo, gbc);
 
-        // Reajuste de margen para el listado de botones horizontales
         gbc.insets = new Insets(10, 0, 10, 0);
 
-        // Inyección de botones según rol
         switch (rol.toLowerCase()) {
             case "administrador":
                 addWebButton(cuerpoWeb, gbc, "Evaluar Solicitudes", this::openEvaluarEmpresas);
@@ -96,13 +83,13 @@ public class VentanaPrincipal extends JFrame {
                 addWebButton(cuerpoWeb, gbc, "Evaluar Proyectos", this::openEvaluarProyectos);
                 addWebButton(cuerpoWeb, gbc, "Gestionar Lotes", this::openLotes);
                 addWebButton(cuerpoWeb, gbc, "Ver Reportes", this::openReportes);
-                addWebButton(cuerpoWeb, gbc, "Mapa Interactivo de Lotes", this::openLoteMap);
+                addWebButton(cuerpoWeb, gbc, "Mapa de Lotes", this::openLoteMap);
                 addWebButton(cuerpoWeb, gbc, "Registrar un nuevo usuario", this::openRegistroUsuario);
                 break;
 
             case "empresa":
                 addWebButton(cuerpoWeb, gbc, "Ver Proyectos", this::openProyectosConsulta);
-                addWebButton(cuerpoWeb, gbc, "Mapa Interactivo de Lotes", this::openLoteMap);
+                addWebButton(cuerpoWeb, gbc, "Mapa de Lotes", this::openLoteMap);
                 break;
 
             case "organismo":
@@ -110,9 +97,7 @@ public class VentanaPrincipal extends JFrame {
                 break;
 
             case "proveedor":
-                addWebButton(cuerpoWeb, gbc, "Ver Proyectos", this::openProyectosConsulta);
-                addWebButton(cuerpoWeb, gbc, "Ver Reportes", this::openReportes);
-                addWebButton(cuerpoWeb, gbc, "Mapa Interactivo de Lotes", this::openLoteMap);
+                addWebButton(cuerpoWeb, gbc, "Mapa de Lotes", this::openLoteMap);
                 break;
 
             default:
@@ -122,10 +107,8 @@ public class VentanaPrincipal extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
         }
 
-        // Agregar secciones al Frame principal
         add(navbar, BorderLayout.NORTH);
 
-        // Un JScrollPane envuelve el cuerpo por si los botones superan el alto de pantallas chicas
         JScrollPane scrollPane = new JScrollPane(cuerpoWeb);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(20);
@@ -134,36 +117,29 @@ public class VentanaPrincipal extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Construye un botón rectangular horizontal gigante con bordes negros remarcados.
-     */
     private void addWebButton(JPanel panel, GridBagConstraints gbc, String text, Runnable action) {
         gbc.gridy++;
 
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 18)); // Letra grande requerida
-        button.setBackground(new Color(250, 251, 253));   // Fondo off-white limpio
-        button.setForeground(new Color(40, 50, 60));      // Texto oscuro elegante
+        button.setFont(new Font("Arial", Font.BOLD, 18));
+        button.setBackground(new Color(250, 251, 253));
+        button.setForeground(new Color(40, 50, 60));
         button.setFocusPainted(false);
 
-        // Dimensión de rectángulo horizontal gigante
         button.setPreferredSize(new Dimension(550, 65));
         button.setHorizontalAlignment(SwingConstants.LEFT);
 
-        // COLOR VERDE CORPORATIVO (Para la pestaña lateral del botón)
         Color verdeFoto = new Color(93, 203, 82);
 
-        // Diseño del borde: Línea verde de diseño a la izquierda + CONTORNO NEGRO REMARCADO
         button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 6, 0, 0, verdeFoto), // Pestaña verde a la izquierda
+                BorderFactory.createMatteBorder(0, 6, 0, 0, verdeFoto),
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(Color.BLACK, 2), // CONTORNO NEGRO DE 2px PARA RESALTAR
-                        BorderFactory.createEmptyBorder(0, 20, 0, 0)    // Desplazamiento del texto interno
+                        BorderFactory.createLineBorder(Color.BLACK, 2),
+                        BorderFactory.createEmptyBorder(0, 20, 0, 0)
                 )
         ));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Efecto Hover básico al pasar el mouse (cambia sutilmente el fondo)
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(240, 243, 247));
@@ -177,7 +153,6 @@ public class VentanaPrincipal extends JFrame {
         panel.add(button, gbc);
     }
 
-    // Métodos lógicos de apertura
     private void openEmpresas() { SwingUtilities.invokeLater(EmpresaView::new); }
     private void openEvaluarEmpresas() { SwingUtilities.invokeLater(EvaluarEmpresaView::new); }
     private void openProyectos() { SwingUtilities.invokeLater(ProyectoView::new); }

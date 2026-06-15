@@ -9,11 +9,10 @@ public class Database {
 
     private static final String DB_URL = "jdbc:sqlite:gpiv.db";
 
-    // Obtener conexión
+    // Conexión
     public static Connection getConnection() throws SQLException {
         Connection conn = DriverManager.getConnection(DB_URL);
 
-        // Activar claves foráneas en cada conexión
         try (Statement stmt = conn.createStatement()) {
             stmt.execute("PRAGMA foreign_keys = ON");
         }

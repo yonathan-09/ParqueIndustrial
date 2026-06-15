@@ -28,28 +28,25 @@ public class EmpresaDashboardView extends JFrame {
         this.loteService = new LoteService();
         this.empresaId = empresaId;
 
-        // FORMATO COMPACTO: Tamaño horizontal fino y equilibrado
         setSize(780, 420);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        Color verdeFoto = new Color(93, 203, 82);
+        Color verde = new Color(93, 203, 82);
 
-        // 1. BARRA SUPERIOR (Estilo Navbar Web Fino)
         JPanel navbar = new JPanel(new BorderLayout());
-        navbar.setBackground(verdeFoto);
-        navbar.setPreferredSize(new Dimension(780, 60)); // Alto reducido para que sea sutil
+        navbar.setBackground(verde);
+        navbar.setPreferredSize(new Dimension(780, 60));
         navbar.setBorder(new EmptyBorder(0, 25, 0, 25));
 
         JLabel lblTitulo = new JLabel("Panel de Autogestión (Empresa ID: " + empresaId + ")");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18)); // Fuente elegante, no gigante
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
         lblTitulo.setForeground(Color.WHITE);
         navbar.add(lblTitulo, BorderLayout.WEST);
 
         add(navbar, BorderLayout.NORTH);
 
-        // 2. PANEL CENTRAL (Cuerpo blanco estilizado)
         JPanel panelContenido = new JPanel(new GridBagLayout());
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(15, 25, 15, 25));
@@ -59,7 +56,6 @@ public class EmpresaDashboardView extends JFrame {
         gbc.gridx = 0;
         gbc.weightx = 1.0;
 
-        // --- Fila Superior: Botones de Acción Inline ---
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
         panelBotones.setOpaque(false);
 
@@ -74,13 +70,13 @@ public class EmpresaDashboardView extends JFrame {
         panelBotones.add(btnRegistrarProyecto);
 
         BotonRedondeado btnListarProyectos = new BotonRedondeado("Mis Proyectos");
-        configurarBoton(btnListarProyectos, verdeFoto);
+        configurarBoton(btnListarProyectos, verde);
         btnListarProyectos.setForeground(Color.WHITE);
         btnListarProyectos.addActionListener(this::listarProyectos);
         panelBotones.add(btnListarProyectos);
 
         BotonRedondeado btnListarLotes = new BotonRedondeado("Lotes Disponibles");
-        configurarBoton(btnListarLotes, verdeFoto);
+        configurarBoton(btnListarLotes, verde);
         btnListarLotes.setForeground(Color.WHITE);
         btnListarLotes.addActionListener(this::listarLotes);
         panelBotones.add(btnListarLotes);
@@ -89,9 +85,8 @@ public class EmpresaDashboardView extends JFrame {
         gbc.insets = new Insets(0, 0, 15, 0);
         panelContenido.add(panelBotones, gbc);
 
-        // --- Fila Inferior: Consola de Texto Equilibrada ---
         output = new JTextArea(10, 50);
-        output.setFont(new Font("Monospaced", Font.PLAIN, 12)); // Letra estándar limpia para el log
+        output.setFont(new Font("Monospaced", Font.PLAIN, 12));
         output.setEditable(false);
         output.setBorder(BorderFactory.createLineBorder(new Color(225, 228, 232), 1));
 
@@ -107,22 +102,18 @@ public class EmpresaDashboardView extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Configura los botones con medidas compactas y fuentes balanceadas.
-     */
     private void configurarBoton(JButton boton, Color colorFondo) {
-        boton.setFont(new Font("Arial", Font.BOLD, 12)); // Texto compacto y prolijo
+        boton.setFont(new Font("Arial", Font.BOLD, 12));
         boton.setBackground(colorFondo);
         if (boton.getForeground() != Color.WHITE) {
             boton.setForeground(new Color(60, 65, 70));
         }
         boton.setFocusPainted(false);
         boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        boton.setPreferredSize(new Dimension(160, 36)); // Tamaño intermedio perfecto
+        boton.setPreferredSize(new Dimension(160, 36));
     }
 
     private void registrarEmpresa(ActionEvent e) {
-        // 1. Crear los componentes de texto para el formulario único
         JTextField txtNombre = new JTextField(15);
         JTextField txtEmail = new JTextField(15);
         JTextField txtCuit = new JTextField(15);
@@ -134,7 +125,6 @@ public class EmpresaDashboardView extends JFrame {
         JTextField txtDescripcionServicio = new JTextField(15);
 
 
-        // 2. Armar un panel contenedor para agrupar los campos verticalmente
         JPanel panelFormulario = new JPanel(new GridLayout(0, 1, 5, 5));
 
         panelFormulario.add(new JLabel("Nombre de la empresa:"));
@@ -156,16 +146,13 @@ public class EmpresaDashboardView extends JFrame {
         panelFormulario.add(new JLabel("Descripción del Servicio/Bien:"));
         panelFormulario.add(txtDescripcionServicio);
 
-        // 3. Lanzar el JOptionPane mostrando el panel completo con botones de Aceptar/Cancelar
         int result = JOptionPane.showConfirmDialog(this, panelFormulario,
                 "Registrar Empresa Interesada", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        // 4. Si el usuario presionó 'Aceptar' (OK), procesamos los datos ingresados
         if (result == JOptionPane.OK_OPTION) {
             String nombre = txtNombre.getText().trim();
             String email = txtEmail.getText().trim();
 
-            // Validación simple para asegurarnos de que no envíe datos vacíos
             if (txtNombre.getText().trim().isEmpty() ||
                     txtEmail.getText().trim().isEmpty() ||
                     txtCuit.getText().trim().isEmpty() ||
@@ -203,13 +190,11 @@ public class EmpresaDashboardView extends JFrame {
     }
 
     private void registrarProyecto(ActionEvent e) {
-        // 1. Crear los componentes de texto para el formulario único
 
         JTextField txtNombre = new JTextField(15);
         JTextField txtDescripcion = new JTextField(15);
         JTextField txtSuperficieLote = new JTextField(15);
 
-        // 2. Armar el panel contenedor para agrupar los campos de forma vertical
         JPanel panelFormulario = new JPanel(new GridLayout(0, 1, 5, 5));
 
         panelFormulario.add(new JLabel("Nombre del proyecto:"));
@@ -222,16 +207,13 @@ public class EmpresaDashboardView extends JFrame {
         double superficieLote =
                 Double.parseDouble(txtSuperficieLote.getText().trim());
 
-        // 3. Lanzar el JOptionPane con el panel completo
         int result = JOptionPane.showConfirmDialog(this, panelFormulario,
                 "Registrar Nuevo Proyecto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        // 4. Si el usuario presionó 'Aceptar', procesamos las entradas
         if (result == JOptionPane.OK_OPTION) {
             String nombre = txtNombre.getText().trim();
             String descripcion = txtDescripcion.getText().trim();
 
-            // Validación para asegurar que no se envíen campos vacíos
             if (!nombre.isEmpty() && !descripcion.isEmpty()) {
                 Proyecto proyecto = new Proyecto(
                         0,
@@ -278,11 +260,8 @@ public class EmpresaDashboardView extends JFrame {
         }
     }
 
-    /**
-     * Componente personalizado de botón con puntas redondeadas finas y contorno negro de 2px.
-     */
     private static class BotonRedondeado extends JButton {
-        private final int radioArco = 12; // Curvatura más fina y estética
+        private final int radioArco = 12;
 
         public BotonRedondeado(String texto) {
             super(texto);
@@ -295,11 +274,9 @@ public class EmpresaDashboardView extends JFrame {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Fondo del botón
             g2.setColor(getBackground());
             g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), radioArco, radioArco));
 
-            // Contorno negro remarcado fino
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(2f));
             g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, radioArco, radioArco));

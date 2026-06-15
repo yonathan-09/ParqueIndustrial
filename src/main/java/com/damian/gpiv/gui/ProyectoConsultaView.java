@@ -15,24 +15,18 @@ public class ProyectoConsultaView extends JFrame {
     private final String rolUsuario;
     private JTextArea output;
 
-    // Constructor principal
     public ProyectoConsultaView(String rolUsuario) {
         super("Consulta de Proyectos - GPIV");
         this.service = new ProyectoService();
         this.rolUsuario = rolUsuario;
 
-        // Dimensiones estandarizadas y compactas
         setSize(850, 550);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // COLOR VERDE CORPORATIVO
         Color verdeFoto = new Color(93, 203, 82);
 
-        // ---------------------------------------------------------------------
-        // 1. BARRA SUPERIOR (Estilo Web con la Franja Verde)
-        // ---------------------------------------------------------------------
         JPanel navbar = new JPanel(new BorderLayout());
         navbar.setBackground(verdeFoto);
         navbar.setPreferredSize(new Dimension(850, 75));
@@ -45,9 +39,6 @@ public class ProyectoConsultaView extends JFrame {
 
         add(navbar, BorderLayout.NORTH);
 
-        // ---------------------------------------------------------------------
-        // 2. PANEL CENTRAL (Cuerpo limpio de Solo Lectura con Letras Grandes)
-        // ---------------------------------------------------------------------
         JPanel panelContenido = new JPanel(new GridBagLayout());
         panelContenido.setBackground(Color.WHITE);
         panelContenido.setBorder(new EmptyBorder(25, 35, 25, 35));
@@ -60,7 +51,6 @@ public class ProyectoConsultaView extends JFrame {
 
         int fila = 0;
 
-        // Botón Redondeado Mediano con Borde Negro de 2px para listar
         BotonRedondeado btnListar = new BotonRedondeado(" Listar Proyectos Disponibles");
         btnListar.setFont(new Font("Arial", Font.BOLD, 16));
         btnListar.setBackground(new Color(240, 243, 247));
@@ -76,9 +66,8 @@ public class ProyectoConsultaView extends JFrame {
         gbc.gridy = fila++;
         panelContenido.add(panelBoton, gbc);
 
-        // Área de salida de datos (Grande y legible)
         output = new JTextArea(12, 50);
-        output.setFont(new Font("Monospaced", Font.PLAIN, 15)); // Letra grande para lectura clara
+        output.setFont(new Font("Monospaced", Font.PLAIN, 15));
         output.setEditable(false);
         output.setBorder(BorderFactory.createLineBorder(new Color(210, 215, 220), 1));
 
@@ -101,7 +90,6 @@ public class ProyectoConsultaView extends JFrame {
         output.append("======================== PROYECTOS DISPONIBLES ========================\n");
 
         for (Proyecto p : proyectos) {
-            // Tu lógica original de filtrado por estado sin alterar absolutamente nada
             if ("pendiente".equalsIgnoreCase(p.getEstado()) || "aprobado".equalsIgnoreCase(p.getEstado())) {
                 hayProyectos = true;
                 output.append(" ID PROYECTO: " + p.getId() + " | " + p.getNombre().toUpperCase() + "\n"
@@ -116,9 +104,6 @@ public class ProyectoConsultaView extends JFrame {
         }
     }
 
-    /**
-     * Componente personalizado de botón con puntas redondeadas medianas y borde negro grueso de 2px.
-     */
     private static class BotonRedondeado extends JButton {
         private final int radioArco = 18;
 
@@ -133,11 +118,9 @@ public class ProyectoConsultaView extends JFrame {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // Fondo del botón
             g2.setColor(getBackground());
             g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), radioArco, radioArco));
 
-            // Contorno negro de 2px sólido remarcado para resaltar
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(2f));
             g2.draw(new RoundRectangle2D.Float(1, 1, getWidth() - 2, getHeight() - 2, radioArco, radioArco));
@@ -148,7 +131,6 @@ public class ProyectoConsultaView extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Simulación: organismo
         SwingUtilities.invokeLater(() -> new ProyectoConsultaView("organismo"));
     }
 }
