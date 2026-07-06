@@ -54,11 +54,6 @@ public class LoginView extends JFrame {
         gbcIzquierdo.gridy = 0;
         gbcIzquierdo.insets = new Insets(0, 0, 30, 0);
         panelIzquierdo.add(lblTitulo, gbcIzquierdo);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 45));
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        gbcIzquierdo.gridy = 0;
-        gbcIzquierdo.insets = new Insets(0, 0, 30, 0);
-        panelIzquierdo.add(lblTitulo, gbcIzquierdo);
 
         JSeparator sepMedio = new JSeparator();
         sepMedio.setForeground(Color.BLACK);
@@ -184,7 +179,6 @@ public class LoginView extends JFrame {
         JPanel panelBotonesSecundarios = new JPanel(new GridLayout(1, 2, 15, 0));
         panelBotonesSecundarios.setBackground(Color.WHITE);
 
-
         JButton btnSolicitarRadicacion = new JButton("Solicitar Radicación");
         btnSolicitarRadicacion.setFont(new Font("Arial", Font.PLAIN, 16));
         btnSolicitarRadicacion.addActionListener(e -> {
@@ -222,8 +216,9 @@ public class LoginView extends JFrame {
 
             dispose();
 
+            // MODIFICADO: Ahora pasamos el objeto 'user' completo cumpliendo la arquitectura en capas
             SwingUtilities.invokeLater(() -> {
-                VentanaPrincipal main = new VentanaPrincipal(user.getRol());
+                VentanaPrincipal main = new VentanaPrincipal(user);
                 main.setVisible(true);
             });
 

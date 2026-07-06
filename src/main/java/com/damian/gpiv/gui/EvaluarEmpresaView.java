@@ -1,8 +1,12 @@
 package com.damian.gpiv.gui;
 
 import com.damian.gpiv.models.SolicitudRadicacion;
+import com.damian.gpiv.models.Usuario;
+import com.damian.gpiv.models.Empresa;
 import com.damian.gpiv.services.ProyectoService;
 import com.damian.gpiv.services.SolicitudRadicacionService;
+import com.damian.gpiv.services.EmpresaService;
+import com.damian.gpiv.services.UsuarioService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -124,84 +128,106 @@ public class EvaluarEmpresaView extends JFrame {
     }
 
     private void verDetalleEmpresa() {
-
         try {
-
-            int solicitudId =
-                    Integer.parseInt(txtEmpresaId.getText());
-
-            SolicitudRadicacion solicitud =
-                    service.buscarPorId(solicitudId);
+            int solicitudId = Integer.parseInt(txtEmpresaId.getText());
+            SolicitudRadicacion solicitud = service.buscarPorId(solicitudId);
 
             if (solicitud == null) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "No existe la solicitud"
-                );
-
+                JOptionPane.showMessageDialog(this, "No existe la solicitud");
                 return;
             }
-
             new DetalleEmpresaView(solicitud);
-
         } catch (NumberFormatException ex) {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Ingrese un ID válido"
-            );
+            JOptionPane.showMessageDialog(this, "Ingrese un ID válido");
         }
     }
 
     private void evaluarEmpresa(String nuevoEstado) {
-
         try {
-
             int solicitudId = Integer.parseInt(txtEmpresaId.getText());
 
             if (nuevoEstado.equals("aprobada")) {
-
                 ProyectoService proyectoService = new ProyectoService();
 
                 if (!proyectoService.existeProyectoParaSolicitud(solicitudId)) {
-
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "No se puede aprobar la solicitud.\nLa empresa todavía no presentó un proyecto."
-                    );
-
+                    JOptionPane.showMessageDialog(this,
+                            "No se puede aprobar la solicitud.\nLa empresa todavía no presentó un proyecto.");
                     return;
                 }
 
+                // 1. Buscamos los datos de la solicitud antes de aprobarla para conocer su nombre/CUIT
+                SolicitudRadicacion solicitud = service.buscarPorId(solicitudId);
+                if (solicitud == null) {
+                    JOptionPane.showMessageDialog(this, "Error: No se encontró la solicitud a aprobar.");
+                    return;
+                }
+
+                // 2. Se aprueba la solicitud (crea el registro en la tabla 'empresas')
                 service.aprobarSolicitud(solicitudId);
 
-            } else {
+                // 3. Buscamos la empresa recién creada en la base de datos para obtener su ID asignado
+                EmpresaService empresaService = new EmpresaService();
+                List<Empresa> listaEmpresas = empresaService.listar();
+                Integer idEmpresaAsignado = null;
 
+                for (Empresa emp : listaEmpresas) {
+                    if (emp.getNombre().equalsIgnoreCase(solicitud.getNombre())) {
+                        idEmpresaAsignado = emp.getId();
+                        break;
+                    }
+                }
+
+                // 4. Formulario emergente manual para crear las credenciales del Representante de Empresa
+                if (idEmpresaAsignado != null) {
+                    JTextField txtNuevoUsuario = new JTextField();
+                    JPasswordField txtNuevaPassword = new JPasswordField();
+
+                    Object[] formularioUser = {
+                            "Firma vinculada exitosamente. ID Catastral: " + idEmpresaAsignado,
+                            "Ingrese Nombre de Usuario para la Empresa:", txtNuevoUsuario,
+                            "Ingrese Contraseña de Acceso:", txtNuevaPassword
+                    };
+
+                    int option = JOptionPane.showConfirmDialog(this, formularioUser,
+                            "Crear Cuenta de Representante de Empresa", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                    if (option == JOptionPane.OK_OPTION) {
+                        String username = txtNuevoUsuario.getText().trim();
+                        String password = new String(txtNuevaPassword.getPassword()).trim();
+
+                        if (!username.isEmpty() && !password.isEmpty()) {
+                            // Instanciamos el servicio de usuarios y guardamos la cuenta asignando el idEmpresaAsignado
+                            UsuarioService usuarioService = new UsuarioService();
+                            Usuario nuevoRepresentante = new Usuario(0, username, "empresa", password, idEmpresaAsignado);
+
+                            usuarioService.registrar(nuevoRepresentante);
+                            JOptionPane.showMessageDialog(this, "Cuenta del Representante (" + username + ") creada y vinculada correctamente.");
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Atención: No se ingresaron credenciales. Deberá crear el usuario desde el panel de registros general.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+                } else {
+                    System.err.println("No se pudo interceptar el ID automático de la empresa aprobada.");
+                }
+
+            } else {
                 service.rechazarSolicitud(solicitudId);
             }
 
-            JOptionPane.showMessageDialog(this,
-                    "Solicitud actualizada correctamente.");
-
+            JOptionPane.showMessageDialog(this, "Solicitud actualizada correctamente.");
             txtEmpresaId.setText("");
+            listar(null); // Refrescar log/lista
 
         } catch (NumberFormatException ex) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Debe ingresar un ID válido.");
+            JOptionPane.showMessageDialog(this, "Debe ingresar un ID válido.");
         }
     }
 
     private void listar(ActionEvent e) {
-
-        List<SolicitudRadicacion> solicitudes =
-                service.listarPendientes();
-
+        List<SolicitudRadicacion> solicitudes = service.listarPendientes();
         output.setText("");
 
         for (SolicitudRadicacion s : solicitudes) {
-
             output.append(
                     "ID: " + s.getId()
                             + " | Empresa: " + s.getNombre()

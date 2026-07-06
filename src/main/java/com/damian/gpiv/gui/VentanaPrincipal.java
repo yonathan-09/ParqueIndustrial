@@ -1,5 +1,6 @@
 package com.damian.gpiv.gui;
 
+import com.damian.gpiv.models.Usuario; // NUEVO: Importamos el modelo Usuario
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -7,11 +8,24 @@ import java.awt.event.ActionEvent;
 
 public class VentanaPrincipal extends JFrame {
 
+    private final Usuario usuario; // MODIFICADO: Guardamos el usuario completo
     private final String rol;
 
-    public VentanaPrincipal(String rol) {
+    // MODIFICADO: El constructor ahora recibe el objeto Usuario completo
+    public VentanaPrincipal(Usuario usuario) {
         super("GPIV - Gestión del Parque Industrial de Viedma");
-        this.rol = rol;
+        this.usuario = usuario;
+        this.rol = usuario.getRol();
+
+        // VALIDACIÓN DE SEGURIDAD (Según la guía de MiguelDevTech)
+        if ("empresa".equalsIgnoreCase(rol) && usuario.getEmpresaId() == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El usuario empresa no tiene una firma/empresa asociada.\nComuníquese con el administrador.",
+                    "Configuración Incompleta",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
 
         setSize(1100, 750);
         setLocationRelativeTo(null);
@@ -33,7 +47,8 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelPerfil = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 20));
         panelPerfil.setOpaque(false);
 
-        JLabel lblSesion = new JLabel("Rol: " + rol.toUpperCase());
+        // MODIFICADO: Muestra el nombre del usuario y su rol
+        JLabel lblSesion = new JLabel("Usuario: " + usuario.getNombre() + " (" + rol.toUpperCase() + ")");
         lblSesion.setFont(new Font("Arial", Font.BOLD, 14));
         lblSesion.setForeground(Color.WHITE);
         panelPerfil.add(lblSesion);
@@ -88,7 +103,9 @@ public class VentanaPrincipal extends JFrame {
                 break;
 
             case "empresa":
-                addWebButton(cuerpoWeb, gbc, "Ver Proyectos", this::openProyectosConsulta);
+                // MODIFICADO: Agregamos el acceso directo a su panel de autogestión de Empresa
+                addWebButton(cuerpoWeb, gbc, "Mi Empresa (Autogestión)", this::openEmpresaDashboard);
+                addWebButton(cuerpoWeb, gbc, "Ver Mi Proyecto", this::openProyectosConsulta);
                 addWebButton(cuerpoWeb, gbc, "Mapa de Lotes", this::openLoteMap);
                 break;
 
@@ -153,6 +170,15 @@ public class VentanaPrincipal extends JFrame {
         panel.add(button, gbc);
     }
 
+    // NUEVO: Método para abrir el Dashboard pasándole la empresa_id del usuario representante
+    private void openEmpresaDashboard() {
+        if (usuario.getEmpresaId() != null) {
+            SwingUtilities.invokeLater(() -> new EmpresaDashboardView(usuario.getEmpresaId()));
+        } else {
+            JOptionPane.showMessageDialog(this, "No posee ninguna empresa asociada.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void openEmpresas() { SwingUtilities.invokeLater(EmpresaView::new); }
     private void openEvaluarEmpresas() { SwingUtilities.invokeLater(EvaluarEmpresaView::new); }
     private void openProyectos() { SwingUtilities.invokeLater(ProyectoView::new); }
@@ -162,8 +188,9 @@ public class VentanaPrincipal extends JFrame {
     private void openReportes() { SwingUtilities.invokeLater(ReporteView::new); }
     private void openLoteMap() { SwingUtilities.invokeLater(LoteMapView::new); }
     private void openRegistroUsuario() { SwingUtilities.invokeLater(RegistroUsuarioView::new); }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new VentanaPrincipal("administrador"));
+        // Adaptado el método main de testeo para usar el nuevo constructor
+        SwingUtilities.invokeLater(() -> new VentanaPrincipal(new Usuario(1, "admin", "administrador", "1234")));
     }
 }
-

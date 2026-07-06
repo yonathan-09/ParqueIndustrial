@@ -94,13 +94,15 @@ public class Database {
                 )
             """);
 
-            // Tabla de usuarios
+            // Tabla de usuarios (MODIFICADA CON EMPRESA_ID)
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS usuarios (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT UNIQUE NOT NULL,
                     rol TEXT CHECK(rol IN ('administrador','empresa','organismo','proveedor')),
-                    password TEXT NOT NULL
+                    password TEXT NOT NULL,
+                    empresa_id INTEGER,
+                    FOREIGN KEY(empresa_id) REFERENCES empresas(id) ON DELETE SET NULL
                 )
             """);
 
