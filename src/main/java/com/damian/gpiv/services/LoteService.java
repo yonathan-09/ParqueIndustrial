@@ -88,6 +88,32 @@ public class LoteService {
         }
     }
 
+    // NUEVO MÉTODO: Busca el lote individual asignado a la empresa para cumplir con la privacidad
+    public Lote buscarPorEmpresaId(int empresaId) {
+        String sql = "SELECT * FROM lotes WHERE empresa_id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, empresaId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Lote(
+                        rs.getInt("id"),
+                        rs.getInt("superficie"),
+                        rs.getString("estado"),
+                        rs.getInt("empresa_id")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar lote por empresaId: " + e.getMessage());
+        }
+
+        return null;
+    }
+
     public List<Lote> listar() {
         List<Lote> lotes = new ArrayList<>();
         String sql = "SELECT * FROM lotes";
@@ -136,6 +162,4 @@ public class LoteService {
 
         return lotes;
     }
-
 }
-

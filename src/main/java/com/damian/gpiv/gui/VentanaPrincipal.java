@@ -1,6 +1,13 @@
 package com.damian.gpiv.gui;
 
-import com.damian.gpiv.models.Usuario; // NUEVO: Importamos el modelo Usuario
+import com.damian.gpiv.models.Usuario;
+import com.damian.gpiv.services.ProyectoService;
+import com.damian.gpiv.services.LoteService;
+import com.damian.gpiv.services.SolicitudRadicacionService;
+import com.damian.gpiv.models.Proyecto;
+import com.damian.gpiv.models.Lote;
+import com.damian.gpiv.models.SolicitudRadicacion;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -8,16 +15,15 @@ import java.awt.event.ActionEvent;
 
 public class VentanaPrincipal extends JFrame {
 
-    private final Usuario usuario; // MODIFICADO: Guardamos el usuario completo
+    private final Usuario usuario;
     private final String rol;
 
-    // MODIFICADO: El constructor ahora recibe el objeto Usuario completo
     public VentanaPrincipal(Usuario usuario) {
         super("GPIV - Gestión del Parque Industrial de Viedma");
         this.usuario = usuario;
         this.rol = usuario.getRol();
 
-        // VALIDACIÓN DE SEGURIDAD (Según la guía de MiguelDevTech)
+        // VALIDACIÓN DE SEGURIDAD
         if ("empresa".equalsIgnoreCase(rol) && usuario.getEmpresaId() == null) {
             JOptionPane.showMessageDialog(
                     this,
@@ -47,7 +53,6 @@ public class VentanaPrincipal extends JFrame {
         JPanel panelPerfil = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 20));
         panelPerfil.setOpaque(false);
 
-        // MODIFICADO: Muestra el nombre del usuario y su rol
         JLabel lblSesion = new JLabel("Usuario: " + usuario.getNombre() + " (" + rol.toUpperCase() + ")");
         lblSesion.setFont(new Font("Arial", Font.BOLD, 14));
         lblSesion.setForeground(Color.WHITE);
@@ -103,10 +108,10 @@ public class VentanaPrincipal extends JFrame {
                 break;
 
             case "empresa":
-                // MODIFICADO: Agregamos el acceso directo a su panel de autogestión de Empresa
-                addWebButton(cuerpoWeb, gbc, "Mi Empresa (Autogestión)", this::openEmpresaDashboard);
-                addWebButton(cuerpoWeb, gbc, "Ver Mi Proyecto", this::openProyectosConsulta);
-                addWebButton(cuerpoWeb, gbc, "Mapa de Lotes", this::openLoteMap);
+                // MODIFICADO: Se removió la línea del "Mapa General de Lotes" para máxima privacidad
+                addWebButton(cuerpoWeb, gbc, "Mis Datos de Empresa", this::openMisDatosEmpresa);
+                addWebButton(cuerpoWeb, gbc, "Mis Datos de Proyecto", this::openMiProyecto);
+                addWebButton(cuerpoWeb, gbc, "Mi Lote Asignado", this::openMiLote);
                 break;
 
             case "organismo":
@@ -170,16 +175,75 @@ public class VentanaPrincipal extends JFrame {
         panel.add(button, gbc);
     }
 
-    // NUEVO: Método para abrir el Dashboard pasándole la empresa_id del usuario representante
-    private void openEmpresaDashboard() {
+    private void openMisDatosEmpresa() {
         if (usuario.getEmpresaId() != null) {
-            SwingUtilities.invokeLater(() -> new EmpresaDashboardView(usuario.getEmpresaId()));
-        } else {
-            JOptionPane.showMessageDialog(this, "No posee ninguna empresa asociada.", "Error", JOptionPane.ERROR_MESSAGE);
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    SolicitudRadicacionService solService = new SolicitudRadicacionService();
+                    SolicitudRadicacion miEmpresa = solService.buscarPorId(usuario.getEmpresaId());
+
+                    if (miEmpresa != null) {
+                        new DetalleEmpresaView(miEmpresa);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No se encontraron los datos de su empresa.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error al cargar los datos: " + e.getMessage());
+                }
+            });
         }
     }
 
-    private void openEmpresas() { SwingUtilities.invokeLater(EmpresaView::new); }
+    private void openMiProyecto() {
+        if (usuario.getEmpresaId() != null) {
+            SwingUtilities.invokeLater(() -> {
+                ProyectoService proyService = new ProyectoService();
+                Proyecto miProyecto = proyService.buscarPorEmpresaId(usuario.getEmpresaId());
+
+                if (miProyecto != null) {
+                    String detalle = "=== MIS DATOS DE PROYECTO ===\n\n" +
+                            "ID Proyecto: " + miProyecto.getId() + "\n" +
+                            "Nombre: " + miProyecto.getNombre() + "\n" +
+                            "Descripción: " + miProyecto.getDescripcion() + "\n" +
+                            "Superficie Requerida: " + miProyecto.getSuperficieLote() + " m²\n" +
+                            "Estado del Proyecto: " + miProyecto.getEstado().toUpperCase();
+
+                    JTextArea area = new JTextArea(8, 35);
+                    area.setText(detalle);
+                    area.setEditable(false);
+                    area.setFont(new Font("Monospaced", Font.PLAIN, 14));
+                    JOptionPane.showMessageDialog(this, new JScrollPane(area), "Mi Proyecto Aprobado", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Usted no posee ningún proyecto cargado o aprobado aún.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+        }
+    }
+
+    private void openMiLote() {
+        if (usuario.getEmpresaId() != null) {
+            SwingUtilities.invokeLater(() -> {
+                LoteService loteService = new LoteService();
+                Lote miLote = loteService.buscarPorEmpresaId(usuario.getEmpresaId());
+
+                if (miLote != null) {
+                    String detalleLote = "=== MI LOTE ASIGNADO ===\n\n" +
+                            "Número de Lote (ID): " + miLote.getId() + "\n" +
+                            "Superficie Total: " + miLote.getSuperficie() + " m²\n" +
+                            "Estado Catastral: " + miLote.getEstado().toUpperCase();
+
+                    JTextArea area = new JTextArea(6, 30);
+                    area.setText(detalleLote);
+                    area.setEditable(false);
+                    area.setFont(new Font("Monospaced", Font.PLAIN, 14));
+                    JOptionPane.showMessageDialog(this, new JScrollPane(area), "Mi Lote Asignado", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Su empresa aprobada aún no tiene un lote físico asignado.", "Lote no asignado", JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+        }
+    }
+
     private void openEvaluarEmpresas() { SwingUtilities.invokeLater(EvaluarEmpresaView::new); }
     private void openProyectos() { SwingUtilities.invokeLater(ProyectoView::new); }
     private void openProyectosConsulta() { SwingUtilities.invokeLater(() -> new ProyectoConsultaView(rol)); }
@@ -190,7 +254,6 @@ public class VentanaPrincipal extends JFrame {
     private void openRegistroUsuario() { SwingUtilities.invokeLater(RegistroUsuarioView::new); }
 
     public static void main(String[] args) {
-        // Adaptado el método main de testeo para usar el nuevo constructor
         SwingUtilities.invokeLater(() -> new VentanaPrincipal(new Usuario(1, "admin", "administrador", "1234")));
     }
 }

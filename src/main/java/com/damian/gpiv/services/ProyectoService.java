@@ -25,8 +25,6 @@ public class ProyectoService {
     }
 
     public void registrar(Proyecto proyecto) {
-
-
         String sql = "INSERT INTO proyectos (nombre, descripcion, superficie_lote, estado, empresa_id, solicitud_id) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
@@ -73,7 +71,6 @@ public class ProyectoService {
         }
     }
 
-
     public void actualizarEstado(int proyectoId, String nuevoEstado) {
         String sql = "UPDATE proyectos SET estado=? WHERE id=?";
 
@@ -93,24 +90,17 @@ public class ProyectoService {
     }
 
     public Proyecto buscarPorId(int id) {
-
-        String sql =
-                "SELECT * FROM proyectos WHERE id=?";
+        String sql = "SELECT * FROM proyectos WHERE id=?";
 
         try(Connection conn = Database.getConnection();
-            PreparedStatement pstmt =
-                    conn.prepareStatement(sql)) {
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
-
             ResultSet rs = pstmt.executeQuery();
 
             if(rs.next()) {
-
                 Integer empresaId = null;
-
-                int valorEmpresa =
-                        rs.getInt("empresa_id");
+                int valorEmpresa = rs.getInt("empresa_id");
 
                 if(!rs.wasNull()) {
                     empresaId = valorEmpresa;
@@ -129,6 +119,35 @@ public class ProyectoService {
 
         } catch(SQLException e) {
             e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    // NUEVO MÉTODO: Busca el proyecto individual de la empresa para cumplir con la privacidad
+    public Proyecto buscarPorEmpresaId(int empresaId) {
+        String sql = "SELECT * FROM proyectos WHERE empresa_id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, empresaId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Proyecto(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getString("estado"),
+                        rs.getInt("empresa_id"),
+                        rs.getInt("solicitud_id"),
+                        rs.getDouble("superficie_lote")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar proyecto por empresaId: " + e.getMessage());
         }
 
         return null;
@@ -154,10 +173,7 @@ public class ProyectoService {
         return archivos;
     }
 
-
-
     public List<Proyecto> listar() {
-
         List<Proyecto> proyectos = new ArrayList<>();
         String sql = "SELECT * FROM proyectos";
 
@@ -168,9 +184,7 @@ public class ProyectoService {
             EmpresaService empresaService = new EmpresaService();
 
             while (rs.next()) {
-
                 Integer empresaId = null;
-
                 int valorEmpresa = rs.getInt("empresa_id");
 
                 if (!rs.wasNull()) {
@@ -203,18 +217,12 @@ public class ProyectoService {
     }
 
     public boolean existeProyectoParaSolicitud(int solicitudId) {
-
-        String sql = """
-    SELECT COUNT(*)
-    FROM proyectos
-    WHERE solicitud_id = ?
-""";
+        String sql = "SELECT COUNT(*) FROM proyectos WHERE solicitud_id = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, solicitudId);
-
             ResultSet rs = pstmt.executeQuery();
 
             if(rs.next()) {
@@ -227,7 +235,6 @@ public class ProyectoService {
 
         return false;
     }
-
 
     public List<Proyecto> listarPorEmpresa(int empresaId) {
         List<Proyecto> proyectos = new ArrayList<>();
@@ -262,5 +269,4 @@ public class ProyectoService {
 
         return proyectos;
     }
-
 }
