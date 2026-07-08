@@ -103,7 +103,6 @@ public class VentanaPrincipal extends JFrame {
                 addWebButton(cuerpoWeb, gbc, "Evaluar Proyectos", this::openEvaluarProyectos);
                 addWebButton(cuerpoWeb, gbc, "Gestionar Lotes", this::openLotes);
                 addWebButton(cuerpoWeb, gbc, "Ver Reportes", this::openReportes);
-                // MODIFICADO: Agregamos el nuevo botón para el Administrador
                 addWebButton(cuerpoWeb, gbc, "Estados de Proyectos Productivos", this::openEstadosProductivos);
                 addWebButton(cuerpoWeb, gbc, "Mapa de Lotes", this::openLoteMap);
                 addWebButton(cuerpoWeb, gbc, "Registrar un nuevo usuario", this::openRegistroUsuario);
@@ -112,6 +111,8 @@ public class VentanaPrincipal extends JFrame {
             case "empresa":
                 addWebButton(cuerpoWeb, gbc, "Mis Datos de Empresa", this::openMisDatosEmpresa);
                 addWebButton(cuerpoWeb, gbc, "Mis Datos de Proyecto", this::openMiProyecto);
+                // NUEVO BOTÓN PROPIO EN EL MENÚ:
+                addWebButton(cuerpoWeb, gbc, "Actualizar Avance de Proyecto", this::openActualizarAvance);
                 addWebButton(cuerpoWeb, gbc, "Mi Lote Asignado", this::openMiLote);
                 break;
 
@@ -195,7 +196,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    // MODIFICADO: Ahora este método muestra el porcentaje y provee el botón para actualizarlo
+    // MODIFICADO: Volvió a ser puramente informativo, quitando el botón de abajo
     private void openMiProyecto() {
         if (usuario.getEmpresaId() != null) {
             SwingUtilities.invokeLater(() -> {
@@ -211,48 +212,47 @@ public class VentanaPrincipal extends JFrame {
                             "Estado del Proyecto: " + miProyecto.getEstado().toUpperCase() + "\n" +
                             "Porcentaje de Avance Actual: " + miProyecto.getPorcentajeAvance() + "%";
 
-                    JTextArea area = new JTextArea(9, 35);
+                    JTextArea area = new JTextArea(8, 35);
                     area.setText(detalle);
                     area.setEditable(false);
                     area.setFont(new Font("Monospaced", Font.PLAIN, 14));
 
-                    JPanel panelContenedor = new JPanel(new BorderLayout(10, 10));
-                    panelContenedor.add(new JScrollPane(area), BorderLayout.CENTER);
-
-                    JButton btnActualizar = new JButton("Actualizar Porcentaje de Avance");
-                    btnActualizar.setFont(new Font("Arial", Font.BOLD, 14));
-                    btnActualizar.setBackground(new Color(93, 203, 82));
-                    btnActualizar.setForeground(Color.WHITE);
-
-                    btnActualizar.addActionListener(e -> {
-                        String input = JOptionPane.showInputDialog(this,
-                                "Ingrese el nuevo porcentaje de avance (1 al 100):",
-                                "Actualizar Avance", JOptionPane.QUESTION_MESSAGE);
-
-                        if (input != null && !input.trim().isEmpty()) {
-                            try {
-                                int nuevoPorcentaje = Integer.parseInt(input);
-                                if (nuevoPorcentaje >= 1 && nuevoPorcentaje <= 100) {
-                                    proyService.actualizarPorcentajeAvance(miProyecto.getId(), nuevoPorcentaje);
-                                    JOptionPane.showMessageDialog(this, "¡Porcentaje actualizado al " + nuevoPorcentaje + "%!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                                    // Cierra la ventana del cartel informativo actual para obligar a refrescar
-                                    Window ventanaCartel = SwingUtilities.getWindowAncestor(btnActualizar);
-                                    if (ventanaCartel != null) ventanaCartel.dispose();
-                                } else {
-                                    JOptionPane.showMessageDialog(this, "El número debe estar entre 1 y 100.", "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-                            } catch (NumberFormatException ex) {
-                                JOptionPane.showMessageDialog(this, "Por favor, ingrese un número entero válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                        }
-                    });
-
-                    panelContenedor.add(btnActualizar, BorderLayout.SOUTH);
-                    JOptionPane.showMessageDialog(this, panelContenedor, "Mi Proyecto Aprobado", JOptionPane.PLAIN_MESSAGE);
-
+                    JOptionPane.showMessageDialog(this, new JScrollPane(area), "Mi Proyecto Aprobado", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this, "Usted no posee ningún proyecto cargado o aprobado aún.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+        }
+    }
+
+    // NUEVO MÉTODO EXCLUSIVO: Abre el cuadro de diálogo directamente desde el menú principal
+    private void openActualizarAvance() {
+        if (usuario.getEmpresaId() != null) {
+            SwingUtilities.invokeLater(() -> {
+                ProyectoService proyService = new ProyectoService();
+                Proyecto miProyecto = proyService.buscarPorEmpresaId(usuario.getEmpresaId());
+
+                if (miProyecto != null) {
+                    String input = JOptionPane.showInputDialog(this,
+                            "Su avance actual es del " + miProyecto.getPorcentajeAvance() + "%\n" +
+                                    "Ingrese el nuevo porcentaje de avance (1 al 100):",
+                            "Actualizar Avance de Proyecto", JOptionPane.QUESTION_MESSAGE);
+
+                    if (input != null && !input.trim().isEmpty()) {
+                        try {
+                            int nuevoPorcentaje = Integer.parseInt(input);
+                            if (nuevoPorcentaje >= 1 && nuevoPorcentaje <= 100) {
+                                proyService.actualizarPorcentajeAvance(miProyecto.getId(), nuevoPorcentaje);
+                                JOptionPane.showMessageDialog(this, "¡Porcentaje de avance actualizado con éxito al " + nuevoPorcentaje + "%!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Por favor, ingrese un número válido entre 1 y 100.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, "Debe ingresar un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Usted no posee ningún proyecto asociado para actualizar avance.", "Información", JOptionPane.WARNING_MESSAGE);
                 }
             });
         }
@@ -282,7 +282,6 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    // NUEVO MÉTODO: Llama a la ventana del Administrador que crearemos en el paso siguiente
     private void openEstadosProductivos() {
         SwingUtilities.invokeLater(EstadosProyectosProductivosView::new);
     }
