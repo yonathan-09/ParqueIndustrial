@@ -9,7 +9,9 @@ public class Proyecto {
     private Integer empresaId;
     private double superficieLote;
     private Empresa empresa;
+    private int porcentajeAvance; // NUEVO ATRIBUTO: Guarda el avance del 1 al 100
 
+    // Constructor para registrar un proyecto nuevo (por defecto el avance iniciará en 0 en la BD)
     public Proyecto(
             String nombre,
             String descripcion,
@@ -22,7 +24,10 @@ public class Proyecto {
         this.estado = estado;
         this.empresaId = empresaId;
         this.superficieLote = superficieLote;
+        this.porcentajeAvance = 0;
     }
+
+    // MODIFICADO: Ahora este constructor también mapea el porcentaje_avance que viene de la BD
     public Proyecto(
             int id,
             String nombre,
@@ -39,9 +44,8 @@ public class Proyecto {
         this.empresaId = empresaId;
         this.solicitudId = solicitudId;
         this.superficieLote = superficieLote;
+        this.porcentajeAvance = 0; // Se inicializa, y ProyectoService se encargará de asignarle el valor real con el setter
     }
-
-
 
     public Integer getSolicitudId() {
         return solicitudId;
@@ -79,14 +83,24 @@ public class Proyecto {
         this.empresa = empresa;
     }
 
+    // NUEVO GETTER
+    public int getPorcentajeAvance() {
+        return porcentajeAvance;
+    }
+
+    // NUEVO SETTER
+    public void setPorcentajeAvance(int porcentajeAvance) {
+        this.porcentajeAvance = porcentajeAvance;
+    }
+
     @Override
     public String toString() {
         String nombreEmpresa = (empresa != null) ? empresa.getNombre() : "Desconocida";
-        int idEmpresa = (empresa != null) ? empresa.getId() : empresaId;
+        int idEmpresa = (empresa != null) ? empresa.getId() : (empresaId != null ? empresaId : 0);
 
         return "Proyecto ID: " + id +
                 " | Nombre: " + nombre.toUpperCase() +
                 " | Estado: " + estado.toUpperCase() +
-                " | Empresa: " + nombreEmpresa + " (ID: " + idEmpresa + ")";
+                " | Empresa: " + nombreEmpresa + " (ID: " + idEmpresa + ") | Avance: " + porcentajeAvance + "%";
     }
 }

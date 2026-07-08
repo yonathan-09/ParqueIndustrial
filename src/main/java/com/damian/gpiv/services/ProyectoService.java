@@ -89,6 +89,25 @@ public class ProyectoService {
         }
     }
 
+    // NUEVO MÉTODO: Permite actualizar el avance físico del proyecto (del 1 al 100)
+    public void actualizarPorcentajeAvance(int proyectoId, int porcentaje) {
+        String sql = "UPDATE proyectos SET porcentaje_avance = ? WHERE id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, porcentaje);
+            pstmt.setInt(2, proyectoId);
+            pstmt.executeUpdate();
+
+            notifier.notify("Avance de Proyecto",
+                    "Proyecto ID " + proyectoId + " actualizó su avance al " + porcentaje + "%");
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar porcentaje de avance: " + e.getMessage());
+        }
+    }
+
     public Proyecto buscarPorId(int id) {
         String sql = "SELECT * FROM proyectos WHERE id=?";
 
@@ -106,7 +125,7 @@ public class ProyectoService {
                     empresaId = valorEmpresa;
                 }
 
-                return new Proyecto(
+                Proyecto proyecto = new Proyecto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("descripcion"),
@@ -115,6 +134,9 @@ public class ProyectoService {
                         rs.getInt("solicitud_id"),
                         rs.getDouble("superficie_lote")
                 );
+                // MODIFICADO: Lee el porcentaje de la base de datos
+                proyecto.setPorcentajeAvance(rs.getInt("porcentaje_avance"));
+                return proyecto;
             }
 
         } catch(SQLException e) {
@@ -135,7 +157,7 @@ public class ProyectoService {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                return new Proyecto(
+                Proyecto proyecto = new Proyecto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("descripcion"),
@@ -144,6 +166,9 @@ public class ProyectoService {
                         rs.getInt("solicitud_id"),
                         rs.getDouble("superficie_lote")
                 );
+                // MODIFICADO: Lee el porcentaje de la base de datos
+                proyecto.setPorcentajeAvance(rs.getInt("porcentaje_avance"));
+                return proyecto;
             }
 
         } catch (SQLException e) {
@@ -200,6 +225,8 @@ public class ProyectoService {
                         rs.getInt("solicitud_id"),
                         rs.getDouble("superficie_lote")
                 );
+                // MODIFICADO: Lee el porcentaje de la base de datos
+                proyecto.setPorcentajeAvance(rs.getInt("porcentaje_avance"));
 
                 if (empresaId != null) {
                     Empresa empresa = empresaService.buscarPorId(empresaId);
@@ -257,6 +284,8 @@ public class ProyectoService {
                         rs.getInt("solicitud_id"),
                         rs.getDouble("superficie_lote")
                 );
+                // MODIFICADO: Lee el porcentaje de la base de datos
+                proyecto.setPorcentajeAvance(rs.getInt("porcentaje_avance"));
 
                 Empresa empresa = empresaService.buscarPorId(rs.getInt("empresa_id"));
                 proyecto.setEmpresa(empresa);

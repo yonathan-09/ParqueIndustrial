@@ -59,7 +59,7 @@ public class Database {
                 );
             """);
 
-            // Tabla de proyectos
+            // Tabla de proyectos (MODIFICADA: Agregada columna porcentaje_avance)
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS proyectos (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,6 +69,7 @@ public class Database {
                         estado TEXT DEFAULT 'en evaluación',
                         empresa_id INTEGER,
                         solicitud_id INTEGER,
+                        porcentaje_avance INTEGER DEFAULT 0,
                         FOREIGN KEY(empresa_id) REFERENCES empresas(id)
                     );
             """);
@@ -117,7 +118,6 @@ public class Database {
                     FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
                 )
             """);
-
 
             System.out.println("Base de datos inicializada correctamente.");
 
